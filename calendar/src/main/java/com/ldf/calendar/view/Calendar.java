@@ -4,12 +4,12 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.ldf.calendar.Config;
 import com.ldf.calendar.Const;
 import com.ldf.calendar.interf.IDayRenderer;
 import com.ldf.calendar.interf.OnAdapterSelectListener;
@@ -40,12 +40,15 @@ public class Calendar extends LinearLayout {
     private float touchSlop;
     private MonthPager monthPager;
     private int viewHeight;
+    private final static String scheduleTag = "schedule";
+    private final static String scheduleCellTag = "schedule_cell";
+    private final static String calendarTag = "calendar";
 
     public Calendar(Context context,
                     OnSelectDateListener onSelectDateListener,
                     CalendarAttr attr) {
         super(context);
-        setCellAndScheduleHeight(Utils.dpi2px(context, 45), Utils.dpi2px(context, 65), Utils.dpi2px(context, 15));
+        setCellAndScheduleHeight(Utils.dpi2px(context, Config.cellHeight), Utils.dpi2px(context,  Config.scheduleHeight), Utils.dpi2px(context,  Config.minScheduleHeight));
 
         this.onSelectDateListener = onSelectDateListener;
         calendarAttr = attr;
@@ -75,7 +78,7 @@ public class Calendar extends LinearLayout {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        renderer.draw(canvas);
+        //renderer.draw(canvas);
     }
 
     @Override
@@ -192,7 +195,7 @@ public class Calendar extends LinearLayout {
             View rowCalendarView = new RowCalendarView(context);
             ViewGroup.LayoutParams calendarLayoutPas = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,cellHeight);
             rowCalendarView.setLayoutParams(calendarLayoutPas);
-            rowCalendarView.setBackgroundColor(Color.BLUE);
+            //rowCalendarView.setBackgroundColor(Color.BLUE);
 
             //日程层
             LinearLayout rowScheduleView = new LinearLayout(context);
@@ -200,6 +203,8 @@ public class Calendar extends LinearLayout {
             rowScheduleView.setLayoutParams(scheduleLayoutPas);
             rowScheduleView.setBackgroundColor(Color.RED);
 
+            rowCalendarView.setTag(calendarTag + row);
+            rowScheduleView.setTag(scheduleTag + row);
             addView(rowCalendarView);
             addView(rowScheduleView);
 

@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 
+import com.ldf.calendar.Config;
 import com.ldf.calendar.Utils;
 import com.ldf.calendar.behavior.MonthPagerBehavior;
 import com.ldf.calendar.component.CalendarViewAdapter;
@@ -34,7 +35,7 @@ public class MonthPager extends ViewPager {
 
     public MonthPager(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setCellAndScheduleHeight(Utils.dpi2px(context, 45), Utils.dpi2px(context, 65), Utils.dpi2px(context, 15));
+        setCellAndScheduleHeight(Utils.dpi2px(context, Config.cellHeight), Utils.dpi2px(context,  Config.scheduleHeight), Utils.dpi2px(context,  Config.minScheduleHeight));
         init();
     }
 

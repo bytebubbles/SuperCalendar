@@ -79,8 +79,8 @@ public class MonthPagerBehavior extends CoordinatorLayout.Behavior<MonthPager> {
 
                         if (ev.getY() - downY + child.getViewHeight() <= child.getCellHeight()) {
                             //将要滑过头了
-                            saveTop(child.getCellHeight());
-                            Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getCellHeight(), 10);
+                            saveTop(child.getCellHeight()+child.getMinScheduleHeight());
+                            Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getCellHeight()+child.getMinScheduleHeight(), 10);
                             isVerticalScroll = false;
                         } else {
                             //正常上滑

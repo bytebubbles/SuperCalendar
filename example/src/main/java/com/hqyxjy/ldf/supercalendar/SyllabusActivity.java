@@ -59,7 +59,7 @@ public class SyllabusActivity extends AppCompatActivity {
         content = (CoordinatorLayout) findViewById(R.id.content);
         monthPager = (MonthPager) findViewById(R.id.calendar_view);
         //此处强行setViewHeight，毕竟你知道你的日历牌的高度
-        monthPager.setCellAndScheduleHeight(Utils.dpi2px(context, 45), Utils.dpi2px(context, 65), Utils.dpi2px(context, 15));
+        //monthPager.setCellAndScheduleHeight(Utils.dpi2px(context, 45), Utils.dpi2px(context, 65), Utils.dpi2px(context, 15));
         tvYear = (TextView) findViewById(R.id.show_year_view);
         tvMonth = (TextView) findViewById(R.id.show_month_view);
         backToday = (TextView) findViewById(R.id.back_today_button);

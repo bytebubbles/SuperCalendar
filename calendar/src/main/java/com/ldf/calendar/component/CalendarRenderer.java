@@ -41,15 +41,21 @@ public class CalendarRenderer {
      *
      * @return void
      */
-    public void draw(Canvas canvas) {
+    private void draw() {
         for (int row = 0; row < Const.TOTAL_ROW; row++) {
+            int calendarIndex = row * 2;
+            RowCalendarView calendarView = (RowCalendarView) calendar.getChildAt(calendarIndex);
+
+            calendarView.drawDay(weeks[row].days,dayRenderer);
+            //calendarView.invalidate();
+            /*
             if (weeks[row] != null) {
                 for (int col = 0; col < Const.TOTAL_COL; col++) {
                     if (weeks[row].days[col] != null) {
                         dayRenderer.drawDay(canvas, weeks[row].days[col]);
                     }
                 }
-            }
+            }*/
         }
     }
 
@@ -264,7 +270,8 @@ public class CalendarRenderer {
 
     public void update() {
         instantiateMonth();
-        calendar.invalidate();
+        draw();
+        //calendar.invalidate();
         //calendar.initLayout();
     }
 
