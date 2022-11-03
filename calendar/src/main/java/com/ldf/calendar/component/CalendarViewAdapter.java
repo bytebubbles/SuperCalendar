@@ -22,7 +22,7 @@ public class CalendarViewAdapter extends PagerAdapter {
     private static CalendarDate date = new CalendarDate();
     private ArrayList<Calendar> calendars = new ArrayList<>();
     private int currentPosition = MonthPager.CURRENT_DAY_INDEX;
-    private CalendarAttr.CalendarType calendarType = CalendarAttr.CalendarType.MONTH;
+    private CalendarAttr.CalendarType calendarType = CalendarAttr.initCalendarType;
     private int rowCount = 0;
     private CalendarDate seedDate;
     private OnCalendarTypeChanged onCalendarTypeChangedListener;
@@ -54,7 +54,7 @@ public class CalendarViewAdapter extends PagerAdapter {
         seedDate = new CalendarDate();
         for (int i = 0; i < 3; i++) {
             CalendarAttr calendarAttr = new CalendarAttr();
-            calendarAttr.setCalendarType(CalendarAttr.CalendarType.WEEK);
+            calendarAttr.setCalendarType(calendarType);
             calendarAttr.setWeekArrayType(weekArrayType);
             Calendar calendar = new Calendar(context, onSelectDateListener, calendarAttr);
             calendar.setOnAdapterSelectListener(new OnAdapterSelectListener() {

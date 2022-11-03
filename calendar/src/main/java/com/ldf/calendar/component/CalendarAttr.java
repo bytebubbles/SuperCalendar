@@ -5,6 +5,9 @@ package com.ldf.calendar.component;
  */
 
 public class CalendarAttr {
+
+    public static CalendarAttr.CalendarType initCalendarType = CalendarType.WEEK;
+
     /**
      * 以何种方式排列星期:<br/>
      * {@link CalendarAttr.WeekArrayType} <br/>

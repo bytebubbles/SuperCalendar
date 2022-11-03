@@ -1,5 +1,6 @@
 package com.ldf.calendar.behavior;
 
+
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewCompat;
@@ -14,16 +15,16 @@ import com.ldf.calendar.Utils;
 import com.ldf.calendar.component.CalendarAttr;
 import com.ldf.calendar.view.MonthPager;
 
-public class RecyclerViewBehavior extends CoordinatorLayout.Behavior<RecyclerView> {
+public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerView> {
     private int initOffset = -1;
     private int minOffset = -1;
     private Context context;
     private boolean initiated = false;
     boolean hidingTop = false;
     boolean showingTop = false;
-    private CalendarAttr.CalendarType calendarType = CalendarAttr.CalendarType.MONTH;
+    private CalendarAttr.CalendarType calendarType = CalendarAttr.initCalendarType;
 
-    public RecyclerViewBehavior(Context context, AttributeSet attrs) {
+    public RecyclerViewBehavior2(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.context = context;
     }
@@ -40,16 +41,28 @@ public class RecyclerViewBehavior extends CoordinatorLayout.Behavior<RecyclerVie
                                             RecyclerView child,
                                             MonthPager monthPager) {
         if (monthPager.getBottom() > 0 && initOffset == -1) {
+
             initOffset = monthPager.getViewHeight();
-            saveTop(initOffset);
+            minOffset = getMonthPager(parent).getCellHeight();
+            if(calendarType == CalendarAttr.CalendarType.MONTH){
+                saveTop(initOffset);
+            }else {
+                saveTop(minOffset);
+            }
+
         }
         if (!initiated) {
             initOffset = monthPager.getViewHeight();
-            saveTop(initOffset);
+            minOffset = getMonthPager(parent).getCellHeight();
+            if(calendarType == CalendarAttr.CalendarType.MONTH){
+                saveTop(initOffset);
+            }else {
+                saveTop(minOffset);
+            }
             initiated = true;
         }
         child.offsetTopAndBottom(Utils.loadTop());
-        minOffset = getMonthPager(parent).getCellHeight();
+       // minOffset = getMonthPager(parent).getCellHeight();
     }
 
     @Override

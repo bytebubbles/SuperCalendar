@@ -137,6 +137,9 @@
             android:background="#fff">
             <TextView
                 style="@style/weekIndicatorStyle"
+                android:text="日" />
+            <TextView
+                style="@style/weekIndicatorStyle"
                 android:text="一" />
             <TextView
                 style="@style/weekIndicatorStyle"
@@ -153,9 +156,7 @@
             <TextView
                 style="@style/weekIndicatorStyle"
                 android:text="六" />
-            <TextView
-                style="@style/weekIndicatorStyle"
-                android:text="日" />
+
         </LinearLayout>
 
         <android.support.design.widget.CoordinatorLayout
@@ -176,7 +177,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="#ffffff"
-                app:layout_behavior="com.ldf.calendar.behavior.RecyclerViewBehavior"
+                app:layout_behavior="com.ldf.calendar.behavior.RecyclerViewBehavior2"
                 android:layout_gravity="bottom"
                 android:clipToPadding="false"
                 android:clipChildren="false"

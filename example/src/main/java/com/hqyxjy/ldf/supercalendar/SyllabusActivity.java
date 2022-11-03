@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ldf.calendar.Const;
 import com.ldf.calendar.Utils;
 import com.ldf.calendar.component.CalendarAttr;
 import com.ldf.calendar.view.MonthPager;
@@ -165,7 +166,7 @@ public class SyllabusActivity extends AppCompatActivity {
         calendarAdapter = new CalendarViewAdapter(
                 context,
                 onSelectDateListener,
-                CalendarAttr.WeekArrayType.Monday,
+                CalendarAttr.WeekArrayType.Sunday,
                 customDayView);
         calendarAdapter.setOnCalendarTypeChangedListener(new CalendarViewAdapter.OnCalendarTypeChanged() {
             @Override
