@@ -3,8 +3,12 @@ package com.ldf.calendar.view;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import com.ldf.calendar.Const;
 import com.ldf.calendar.interf.IDayRenderer;
@@ -16,7 +20,7 @@ import com.ldf.calendar.model.CalendarDate;
 import com.ldf.calendar.Utils;
 
 @SuppressLint("ViewConstructor")
-public class Calendar extends View {
+public class Calendar extends LinearLayout {
     /**
      * 日历列数
      */
@@ -29,22 +33,38 @@ public class Calendar extends View {
     private CalendarAttr calendarAttr;
     private CalendarRenderer renderer;
 
+    private int scheduleHeight; //日程的高度
+    private int minScheduleHeight; //最小日程的高度
+
     private OnAdapterSelectListener onAdapterSelectListener;
     private float touchSlop;
+    private MonthPager monthPager;
+    private int viewHeight;
 
     public Calendar(Context context,
                     OnSelectDateListener onSelectDateListener,
                     CalendarAttr attr) {
         super(context);
+        setCellAndScheduleHeight(Utils.dpi2px(context, 45), Utils.dpi2px(context, 65), Utils.dpi2px(context, 15));
+
         this.onSelectDateListener = onSelectDateListener;
         calendarAttr = attr;
         init(context);
+        initLayout();
+    }
+
+    public void setCellAndScheduleHeight(int cellHeight, int scheduleHeight, int minScheduleHeight){
+        this.cellHeight = cellHeight;
+        this.scheduleHeight = scheduleHeight;
+        this.minScheduleHeight = minScheduleHeight;
+        this.viewHeight = cellHeight * 6 + scheduleHeight * 6;
     }
 
     private void init(Context context) {
         this.context = context;
         touchSlop = Utils.getTouchSlop(context);
         initAttrAndRenderer();
+        setOrientation(VERTICAL);
     }
 
     private void initAttrAndRenderer() {
@@ -157,5 +177,46 @@ public class Calendar extends View {
 
     public void setDayRenderer(IDayRenderer dayRenderer) {
         renderer.setDayRenderer(dayRenderer);
+    }
+
+
+    /**
+     * 数据准备完毕后，插入布局
+     */
+    public void initLayout() {
+        Week[] weeks = renderer.getWeeks();
+        for (int row = 0; row < Const.TOTAL_ROW; row++) {
+
+            //插入周，分两层，一层是用画布绘制的日历，一层是LinerLayout存放日程item
+            //日历层
+            View rowCalendarView = new RowCalendarView(context);
+            ViewGroup.LayoutParams calendarLayoutPas = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,cellHeight);
+            rowCalendarView.setLayoutParams(calendarLayoutPas);
+            rowCalendarView.setBackgroundColor(Color.BLUE);
+
+            //日程层
+            LinearLayout rowScheduleView = new LinearLayout(context);
+            ViewGroup.LayoutParams scheduleLayoutPas = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT,minScheduleHeight);
+            rowScheduleView.setLayoutParams(scheduleLayoutPas);
+            rowScheduleView.setBackgroundColor(Color.RED);
+
+            addView(rowCalendarView);
+            addView(rowScheduleView);
+
+            /*if (weeks[row] != null) {
+                for (int col = 0; col < Const.TOTAL_COL; col++) {
+                    if (weeks[row].days[col] != null) {
+                        //dayRenderer.drawDay(canvas, weeks[row].days[col]);
+                    }
+                }
+            }*/
+        }
+
+    }
+
+    public void setMonthPager(MonthPager container) {
+        this.monthPager = container;
+        this.scheduleHeight = container.getScheduleHeight();
+        this.minScheduleHeight = container.getMinScheduleHeight();
     }
 }

@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 
+import com.ldf.calendar.Utils;
 import com.ldf.calendar.behavior.MonthPagerBehavior;
 import com.ldf.calendar.component.CalendarViewAdapter;
 
@@ -15,7 +16,9 @@ public class MonthPager extends ViewPager {
     public static int CURRENT_DAY_INDEX = 1000;
 
     private int currentPosition = CURRENT_DAY_INDEX;
-    private int cellHeight;
+    private int cellHeight;     //天的高度
+    private int scheduleHeight; //日程的高度
+    private int minScheduleHeight; //最小日程的高度
     private int viewHeight;
     private int rowIndex = 6;
 
@@ -31,6 +34,7 @@ public class MonthPager extends ViewPager {
 
     public MonthPager(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setCellAndScheduleHeight(Utils.dpi2px(context, 45), Utils.dpi2px(context, 65), Utils.dpi2px(context, 15));
         init();
     }
 
@@ -65,6 +69,14 @@ public class MonthPager extends ViewPager {
         };
         addOnPageChangeListener(viewPageChangeListener);
         hasPageChangeListener = true;
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        //int mWithMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+
+        int mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(viewHeight, MeasureSpec.EXACTLY);
+        super.onMeasure(widthMeasureSpec, mHeightMeasureSpec);
     }
 
     @Override
@@ -137,6 +149,13 @@ public class MonthPager extends ViewPager {
         this.viewHeight = viewHeight;
     }
 
+    public void setCellAndScheduleHeight(int cellHeight, int scheduleHeight, int minScheduleHeight){
+        this.cellHeight = cellHeight;
+        this.scheduleHeight = scheduleHeight;
+        this.minScheduleHeight = minScheduleHeight;
+        this.viewHeight = cellHeight * 6 + scheduleHeight * 6;
+    }
+
     public int getViewHeight() {
         return viewHeight;
     }
@@ -158,5 +177,13 @@ public class MonthPager extends ViewPager {
 
     public void setRowIndex(int rowIndex) {
         this.rowIndex = rowIndex;
+    }
+
+    public int getScheduleHeight() {
+        return scheduleHeight;
+    }
+
+    public int getMinScheduleHeight() {
+        return minScheduleHeight;
     }
 }

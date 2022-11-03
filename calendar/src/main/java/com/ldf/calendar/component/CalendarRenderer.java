@@ -3,6 +3,7 @@ package com.ldf.calendar.component;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.util.Log;
+import android.view.View;
 
 import com.ldf.calendar.Const;
 import com.ldf.calendar.Utils;
@@ -11,6 +12,7 @@ import com.ldf.calendar.interf.OnSelectDateListener;
 import com.ldf.calendar.model.CalendarDate;
 import com.ldf.calendar.view.Calendar;
 import com.ldf.calendar.view.Day;
+import com.ldf.calendar.view.RowCalendarView;
 import com.ldf.calendar.view.Week;
 
 /**
@@ -263,7 +265,9 @@ public class CalendarRenderer {
     public void update() {
         instantiateMonth();
         calendar.invalidate();
+        //calendar.initLayout();
     }
+
 
     public CalendarDate getSeedDate() {
         return this.seedDate;
@@ -325,5 +329,9 @@ public class CalendarRenderer {
 
     public void setDayRenderer(IDayRenderer dayRenderer) {
         this.dayRenderer = dayRenderer;
+    }
+
+    public Week[] getWeeks() {
+        return weeks;
     }
 }
