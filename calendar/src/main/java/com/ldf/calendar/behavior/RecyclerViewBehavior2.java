@@ -13,16 +13,18 @@ import android.widget.Toast;
 
 import com.ldf.calendar.Utils;
 import com.ldf.calendar.component.CalendarAttr;
+import com.ldf.calendar.view.Calendar;
 import com.ldf.calendar.view.MonthPager;
 
 public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerView> {
-    private int initOffset = -1;
-    private int minOffset = -1;
+    private int monthOffset = -1;
+    private int weekOffset = -1;
+    private int scheduleMonthOffset = -1;
     private Context context;
     private boolean initiated = false;
     boolean hidingTop = false;
     boolean showingTop = false;
-    private CalendarAttr.CalendarType calendarType = CalendarAttr.initCalendarType;
+    private CalendarAttr.CalendarType calendarType = Calendar.getCurrCalendarType();
 
     public RecyclerViewBehavior2(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -40,24 +42,30 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
     private void initMinOffsetAndInitOffset(CoordinatorLayout parent,
                                             RecyclerView child,
                                             MonthPager monthPager) {
-        if (monthPager.getBottom() > 0 && initOffset == -1) {
+        if (monthPager.getBottom() > 0 && monthOffset == -1) {
 
-            initOffset = monthPager.getViewHeight();
-            minOffset = getMonthPager(parent).getCellHeight();
+            monthOffset = monthPager.getMonthHeight();
+            weekOffset = getMonthPager(parent).getWeekHeight();
+            scheduleMonthOffset = monthPager.getViewHeight();
             if(calendarType == CalendarAttr.CalendarType.MONTH){
-                saveTop(initOffset);
+                saveTop(monthOffset);
+            }else if(calendarType == CalendarAttr.CalendarType.WEEK) {
+                saveTop(weekOffset);
             }else {
-                saveTop(minOffset);
+                saveTop(scheduleMonthOffset);
             }
 
         }
         if (!initiated) {
-            initOffset = monthPager.getViewHeight();
-            minOffset = getMonthPager(parent).getCellHeight();
+            monthOffset = monthPager.getMonthHeight();
+            weekOffset = getMonthPager(parent).getWeekHeight();
+            scheduleMonthOffset = monthPager.getViewHeight();
             if(calendarType == CalendarAttr.CalendarType.MONTH){
-                saveTop(initOffset);
+                saveTop(monthOffset);
+            }else if(calendarType == CalendarAttr.CalendarType.WEEK) {
+                saveTop(weekOffset);
             }else {
-                saveTop(minOffset);
+                saveTop(scheduleMonthOffset);
             }
             initiated = true;
         }
@@ -93,14 +101,14 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
         }
 
         // 上滑，正在隐藏顶部的日历
-        hidingTop = dy > 0 && child.getTop() <= initOffset
-                && child.getTop() > getMonthPager(coordinatorLayout).getCellHeight();
+        hidingTop = dy > 0 && child.getTop() <= monthOffset
+                && child.getTop() > getMonthPager(coordinatorLayout).getWeekHeight();
         // 下滑，正在展示顶部的日历
         showingTop = dy < 0 && !ViewCompat.canScrollVertically(target, -1);
 
         if (hidingTop || showingTop) {
             consumed[1] = Utils.scroll(child, dy,
-                    getMonthPager(coordinatorLayout).getCellHeight(),
+                    getMonthPager(coordinatorLayout).getWeekHeight(),
                     getMonthPager(coordinatorLayout).getViewHeight());
             saveTop(child.getTop());
         }
@@ -113,16 +121,16 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
         MonthPager monthPager = (MonthPager) parent.getChildAt(0);
         monthPager.setScrollable(true);
         if (!Utils.isScrollToBottom()) {
-            if (initOffset - Utils.loadTop() > Utils.getTouchSlop(context) && hidingTop) {
-                Utils.scrollTo(parent, child, getMonthPager(parent).getCellHeight(), 500);
+            if (monthOffset - Utils.loadTop() > Utils.getTouchSlop(context) && hidingTop) {
+                Utils.scrollTo(parent, child, getMonthPager(parent).getWeekHeight(), 500);
             } else {
                 Utils.scrollTo(parent, child, getMonthPager(parent).getViewHeight(), 150);
             }
         } else {
-            if (Utils.loadTop() - minOffset > Utils.getTouchSlop(context) && showingTop) {
+            if (Utils.loadTop() - weekOffset > Utils.getTouchSlop(context) && showingTop) {
                 Utils.scrollTo(parent, child, getMonthPager(parent).getViewHeight(), 500);
             } else {
-                Utils.scrollTo(parent, child, getMonthPager(parent).getCellHeight(), 150);
+                Utils.scrollTo(parent, child, getMonthPager(parent).getWeekHeight(), 150);
             }
         }
     }
@@ -149,10 +157,14 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
 
     private void saveTop(int top) {
         Utils.saveTop(top);
-        if (Utils.loadTop() == initOffset) {
+        if (Utils.loadTop() == monthOffset) {
+            Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
             Utils.setScrollToBottom(false);
-        } else if (Utils.loadTop() == minOffset) {
+        } else if (Utils.loadTop() == weekOffset) {
+            Calendar.setCurrCalendarType(CalendarAttr.CalendarType.WEEK);
             Utils.setScrollToBottom(true);
+        } else if(Utils.loadTop() == scheduleMonthOffset){
+            Calendar.setCurrCalendarType(CalendarAttr.CalendarType.SCHEDULE_MONTH);
         }
     }
 }

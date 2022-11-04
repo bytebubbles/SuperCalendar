@@ -24,6 +24,7 @@ public class Calendar extends LinearLayout {
     /**
      * 日历列数
      */
+    private static CalendarAttr.CalendarType currCalendarType = CalendarAttr.CalendarType.SCHEDULE_MONTH;
     private CalendarAttr.CalendarType calendarType;
     private int cellHeight; // 单元格高度
     private int cellWidth; // 单元格宽度
@@ -199,7 +200,7 @@ public class Calendar extends LinearLayout {
 
             //日程层
             LinearLayout rowScheduleView = new LinearLayout(context);
-            ViewGroup.LayoutParams scheduleLayoutPas = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT,minScheduleHeight);
+            ViewGroup.LayoutParams scheduleLayoutPas = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT,scheduleHeight);
             rowScheduleView.setLayoutParams(scheduleLayoutPas);
             rowScheduleView.setBackgroundColor(Color.RED);
 
@@ -223,5 +224,13 @@ public class Calendar extends LinearLayout {
         this.monthPager = container;
         this.scheduleHeight = container.getScheduleHeight();
         this.minScheduleHeight = container.getMinScheduleHeight();
+    }
+
+    public static CalendarAttr.CalendarType getCurrCalendarType() {
+        return currCalendarType;
+    }
+
+    public static void setCurrCalendarType(CalendarAttr.CalendarType currCalendarType) {
+        Calendar.currCalendarType = currCalendarType;
     }
 }

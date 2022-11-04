@@ -49,7 +49,7 @@ public class RecyclerViewBehavior extends CoordinatorLayout.Behavior<RecyclerVie
             initiated = true;
         }
         child.offsetTopAndBottom(Utils.loadTop());
-        minOffset = getMonthPager(parent).getCellHeight();
+        minOffset = getMonthPager(parent).getWeekHeight();
     }
 
     @Override
@@ -81,13 +81,13 @@ public class RecyclerViewBehavior extends CoordinatorLayout.Behavior<RecyclerVie
 
         // 上滑，正在隐藏顶部的日历
         hidingTop = dy > 0 && child.getTop() <= initOffset
-                && child.getTop() > getMonthPager(coordinatorLayout).getCellHeight();
+                && child.getTop() > getMonthPager(coordinatorLayout).getWeekHeight();
         // 下滑，正在展示顶部的日历
         showingTop = dy < 0 && !ViewCompat.canScrollVertically(target, -1);
 
         if (hidingTop || showingTop) {
             consumed[1] = Utils.scroll(child, dy,
-                    getMonthPager(coordinatorLayout).getCellHeight(),
+                    getMonthPager(coordinatorLayout).getWeekHeight(),
                     getMonthPager(coordinatorLayout).getViewHeight());
             saveTop(child.getTop());
         }
@@ -101,7 +101,7 @@ public class RecyclerViewBehavior extends CoordinatorLayout.Behavior<RecyclerVie
         monthPager.setScrollable(true);
         if (!Utils.isScrollToBottom()) {
             if (initOffset - Utils.loadTop() > Utils.getTouchSlop(context) && hidingTop) {
-                Utils.scrollTo(parent, child, getMonthPager(parent).getCellHeight(), 500);
+                Utils.scrollTo(parent, child, getMonthPager(parent).getWeekHeight(), 500);
             } else {
                 Utils.scrollTo(parent, child, getMonthPager(parent).getViewHeight(), 150);
             }
@@ -109,7 +109,7 @@ public class RecyclerViewBehavior extends CoordinatorLayout.Behavior<RecyclerVie
             if (Utils.loadTop() - minOffset > Utils.getTouchSlop(context) && showingTop) {
                 Utils.scrollTo(parent, child, getMonthPager(parent).getViewHeight(), 500);
             } else {
-                Utils.scrollTo(parent, child, getMonthPager(parent).getCellHeight(), 150);
+                Utils.scrollTo(parent, child, getMonthPager(parent).getWeekHeight(), 150);
             }
         }
     }

@@ -10,6 +10,6 @@ package com.ldf.calendar;
 
 public class Config {
         public static int cellHeight = 45;
-        public static int scheduleHeight = 15;
+        public static int scheduleHeight = 45;
         public static int minScheduleHeight = 15;
 }

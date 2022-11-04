@@ -22,7 +22,7 @@ public class CalendarViewAdapter extends PagerAdapter {
     private static CalendarDate date = new CalendarDate();
     private ArrayList<Calendar> calendars = new ArrayList<>();
     private int currentPosition = MonthPager.CURRENT_DAY_INDEX;
-    private CalendarAttr.CalendarType calendarType = CalendarAttr.initCalendarType;
+    private CalendarAttr.CalendarType calendarType = Calendar.getCurrCalendarType();
     private int rowCount = 0;
     private CalendarDate seedDate;
     private OnCalendarTypeChanged onCalendarTypeChangedListener;
@@ -136,6 +136,10 @@ public class CalendarViewAdapter extends PagerAdapter {
 
     public CalendarDate getLastVisibleDate() {
         return calendars.get(currentPosition % 3).getLastDate();
+    }
+
+    public Calendar getCurrCalendarView(){
+        return calendars.get(currentPosition % 3);
     }
 
     public void cancelOtherSelectState() {

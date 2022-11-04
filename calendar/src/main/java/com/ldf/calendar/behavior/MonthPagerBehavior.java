@@ -5,9 +5,12 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 
+import com.ldf.calendar.Const;
 import com.ldf.calendar.Utils;
 import com.ldf.calendar.component.CalendarViewAdapter;
+import com.ldf.calendar.view.Calendar;
 import com.ldf.calendar.view.MonthPager;
 
 /**
@@ -53,49 +56,106 @@ public class MonthPagerBehavior extends CoordinatorLayout.Behavior<MonthPager> {
                         directionUpa = true;
                     }
 
-                    if (lastTop < child.getViewHeight() / 2 + child.getCellHeight() / 2) {
+                    if( Utils.loadTop() <= child.getViewHeight()
+                            &&  Utils.loadTop() > child.getMonthHeight()
+                    ){
+                        //日程状态，改变日程view的高度
+                        float offset = Math.abs(ev.getY() - downY);
+                        if(offset > child.getMinScheduleHeight() && offset <= child.getScheduleHeight()){
+
+                            CalendarViewAdapter adapter = (CalendarViewAdapter) child.getAdapter();
+                            Calendar calendar = adapter.getCurrCalendarView();
+                            for (int i = 0; i < Const.TOTAL_ROW; i++){
+                                View view = calendar.getChildAt(i * 2 + 1);
+                                ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
+                                layoutParams.height = (int) offset;
+                                view.setLayoutParams(layoutParams);
+                            }
+                            ViewGroup.LayoutParams childLayoutParams = child.getLayoutParams();
+                            childLayoutParams.height = (int) (childLayoutParams.height + (ev.getY() - downY));
+                            child.setLayoutParams(childLayoutParams);
+                            saveTop((int) (child.getScheduleHeight() + ((ev.getY() - downY))));
+                            //Utils.scroll((RecyclerView) parent.getChildAt(1), (int) (lastY - ev.getY()), child.getMonthHeight(), child.getViewHeight());
+                        }
+                    }else if( Utils.loadTop() <= child.getMonthHeight() &&  Utils.loadTop() > child.getWeekHeight()){
+                       /* //月状态
+                        if(directionUpa){
+                            //向上滑
+                            if (ev.getY() - downY + child.getMonthHeight() <= child.getWeekHeight()) {
+                                //将要滑过头了
+                                saveTop(child.getWeekHeight()+child.getMinScheduleHeight());
+                                Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getWeekHeight()+child.getMinScheduleHeight(), 10);
+                                isVerticalScroll = false;
+                            }else {
+                                //正常上滑
+                                saveTop((int) (child.getMonthHeight() + ((ev.getY() - downY))));
+                                Utils.scroll(parent.getChildAt(1), (int) (lastY - ev.getY()),
+                                        child.getWeekHeight(), child.getMonthHeight());
+                            }
+                        }else {
+                            //向下滑
+                            if (ev.getY() - downY + child.getWeekHeight() >= child.getMonthHeight()) {
+                                //将要滑过头了
+                                saveTop(child.getMonthHeight());
+                                Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getMonthHeight(), 10);
+                                isVerticalScroll = false;
+                            } else {
+                                //正常下滑
+                                saveTop((int) (child.getWeekHeight() + ((ev.getY() - downY))));
+                                Utils.scroll(parent.getChildAt(1), (int) (lastY - ev.getY()),
+                                        child.getWeekHeight(), child.getMonthHeight());
+                            }
+                        }*/
+                    }else if(Utils.loadTop() <= child.getWeekHeight() ){
+                        //不能再拖了啊
+
+                    }
+
+/*
+                    if (lastTop < child.getViewHeight() / 2 + child.getWeekHeight() / 2) {
                         //这里表示本来是收缩状态
                         if (ev.getY() - downY <= 0 || Utils.loadTop() >= child.getViewHeight()) {
                             //向上滑或者已展开了
                             lastY = ev.getY();
                             return true;
                         }
-                        if (ev.getY() - downY + child.getCellHeight() >= child.getViewHeight()) {
+                        if (ev.getY() - downY + child.getWeekHeight() >= child.getViewHeight()) {
                             //将要滑过头了
                             saveTop(child.getViewHeight());
                             Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getViewHeight(), 10);
                             isVerticalScroll = false;
                         } else {
                             //正常下滑
-                            saveTop((int) (child.getCellHeight() + ((ev.getY() - downY))));
+                            saveTop((int) (child.getWeekHeight() + ((ev.getY() - downY))));
                             Utils.scroll(parent.getChildAt(1), (int) (lastY - ev.getY()),
-                                    child.getCellHeight(), child.getViewHeight());
+                                    child.getWeekHeight(), child.getViewHeight());
                         }
                     } else {
-                        if (ev.getY() - downY >= 0 || Utils.loadTop() <= child.getCellHeight()) {
+                        if (ev.getY() - downY >= 0 || Utils.loadTop() <= child.getWeekHeight()) {
                             lastY = ev.getY();
                             return true;
                         }
 
-                        if (ev.getY() - downY + child.getViewHeight() <= child.getCellHeight()) {
+                        if (ev.getY() - downY + child.getViewHeight() <= child.getWeekHeight()) {
                             //将要滑过头了
-                            saveTop(child.getCellHeight()+child.getMinScheduleHeight());
-                            Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getCellHeight()+child.getMinScheduleHeight(), 10);
+                            saveTop(child.getWeekHeight()+child.getMinScheduleHeight());
+                            Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getWeekHeight()+child.getMinScheduleHeight(), 10);
                             isVerticalScroll = false;
                         } else {
                             //正常上滑
                             saveTop((int) (child.getViewHeight() + ((ev.getY() - downY))));
                             Utils.scroll(parent.getChildAt(1), (int) (lastY - ev.getY()),
-                                    child.getCellHeight(), child.getViewHeight());
+                                    child.getWeekHeight(), child.getViewHeight());
                         }
                     }
+*/
 
                     lastY = ev.getY();
                     return true;
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                if (isVerticalScroll) {
+                /*if (isVerticalScroll) {
 
                     child.setScrollable(true);
 
@@ -105,7 +165,7 @@ public class MonthPagerBehavior extends CoordinatorLayout.Behavior<MonthPager> {
                         if (directionUpa) {
                             Utils.setScrollToBottom(true);
                             calendarViewAdapter.switchToWeek(child.getRowIndex());
-                            Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getCellHeight(), 300);
+                            Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getWeekHeight(), 300);
                         } else {
                             Utils.setScrollToBottom(false);
                             calendarViewAdapter.switchToMonth();
@@ -115,7 +175,7 @@ public class MonthPagerBehavior extends CoordinatorLayout.Behavior<MonthPager> {
 
                     isVerticalScroll = false;
                     return true;
-                }
+                }*/
                 break;
         }
         return false;
@@ -185,15 +245,16 @@ public class MonthPagerBehavior extends CoordinatorLayout.Behavior<MonthPager> {
         dependentViewTop = dependency.getTop();
         top = child.getTop();
 
-        if (offsetY > child.getCellHeight()) {
+        if (offsetY > child.getWeekHeight()) {
             calendarViewAdapter.switchToMonth();
         }
-        if (offsetY < -child.getCellHeight()) {
+        if (offsetY < -child.getWeekHeight()) {
             calendarViewAdapter.switchToWeek(child.getRowIndex());
         }
 
-        if (dependentViewTop > child.getCellHeight() - 24
-                && dependentViewTop < child.getCellHeight() + 24
+/*
+        if (dependentViewTop > child.getWeekHeight() - 24
+                && dependentViewTop < child.getWeekHeight() + 24
                 && top > -touchSlop - child.getTopMovableDistance()
                 && top < touchSlop - child.getTopMovableDistance()) {
             Utils.setScrollToBottom(true);
@@ -208,6 +269,7 @@ public class MonthPagerBehavior extends CoordinatorLayout.Behavior<MonthPager> {
             calendarViewAdapter.switchToMonth();
             offsetY = 0;
         }
+*/
 
         return true;
         // TODO: 16/12/8 dy为负时表示向上滑动，dy为正时表示向下滑动，dy为零时表示滑动停止

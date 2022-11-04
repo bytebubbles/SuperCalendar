@@ -12,9 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.ldf.calendar.Const;
 import com.ldf.calendar.Utils;
 import com.ldf.calendar.component.CalendarAttr;
 import com.ldf.calendar.view.MonthPager;
@@ -121,7 +119,7 @@ public class SyllabusActivity extends AppCompatActivity {
                     Utils.scrollTo(content, rvToDoList, monthPager.getViewHeight(), 200);
                     calendarAdapter.switchToMonth();
                 } else {
-                    Utils.scrollTo(content, rvToDoList, monthPager.getCellHeight(), 200);
+                    Utils.scrollTo(content, rvToDoList, monthPager.getWeekHeight(), 200);
                     calendarAdapter.switchToWeek(monthPager.getRowIndex());
                 }
             }

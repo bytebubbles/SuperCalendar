@@ -17,9 +17,10 @@ public class MonthPager extends ViewPager {
     public static int CURRENT_DAY_INDEX = 1000;
 
     private int currentPosition = CURRENT_DAY_INDEX;
-    private int cellHeight;     //天的高度
+    private int weekHeight;     //天的高度
     private int scheduleHeight; //日程的高度
     private int minScheduleHeight; //最小日程的高度
+    private int monthHeight;    //月视图高度
     private int viewHeight;
     private int rowIndex = 6;
 
@@ -135,25 +136,26 @@ public class MonthPager extends ViewPager {
     public int getTopMovableDistance() {
         CalendarViewAdapter calendarViewAdapter = (CalendarViewAdapter) getAdapter();
         if(calendarViewAdapter == null) {
-            return cellHeight;
+            return weekHeight;
         }
         rowIndex = calendarViewAdapter.getPagers().get(currentPosition % 3).getSelectedRowIndex();
-        return cellHeight * rowIndex;
+        return weekHeight * rowIndex + scheduleHeight * rowIndex;
     }
 
-    public int getCellHeight() {
-        return cellHeight;
+    public int getWeekHeight() {
+        return weekHeight;
     }
 
     public void setViewHeight(int viewHeight) {
-        cellHeight = viewHeight / 6;
+        weekHeight = viewHeight / 6;
         this.viewHeight = viewHeight;
     }
 
     public void setCellAndScheduleHeight(int cellHeight, int scheduleHeight, int minScheduleHeight){
-        this.cellHeight = cellHeight;
+        this.weekHeight = cellHeight;
         this.scheduleHeight = scheduleHeight;
         this.minScheduleHeight = minScheduleHeight;
+        this.monthHeight = cellHeight * 6 + minScheduleHeight * 6;
         this.viewHeight = cellHeight * 6 + scheduleHeight * 6;
     }
 
@@ -186,5 +188,9 @@ public class MonthPager extends ViewPager {
 
     public int getMinScheduleHeight() {
         return minScheduleHeight;
+    }
+
+    public int getMonthHeight() {
+        return monthHeight;
     }
 }
