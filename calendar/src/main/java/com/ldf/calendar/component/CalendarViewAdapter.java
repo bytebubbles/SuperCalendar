@@ -164,6 +164,58 @@ public class CalendarViewAdapter extends PagerAdapter {
         notifyDataChanged();
     }
 
+    public void switchToSchedule(){
+        if (calendars != null && calendars.size() > 0 && calendarType != CalendarAttr.CalendarType.SCHEDULE_MONTH) {
+            if (onCalendarTypeChangedListener != null) {
+                onCalendarTypeChangedListener.onCalendarTypeChanged(CalendarAttr.CalendarType.SCHEDULE_MONTH);
+            }
+
+            MonthPager.CURRENT_DAY_INDEX = currentPosition;
+            Calendar v = calendars.get(currentPosition % 3);//0
+            seedDate = v.getSeedDate();
+
+            Calendar v1 = calendars.get(currentPosition % 3);//0
+
+            Calendar v2 = calendars.get((currentPosition - 1) % 3);//2
+
+            Calendar v3 = calendars.get((currentPosition + 1) % 3);//1
+            CalendarAttr.CalendarType lastType = calendarType;
+            calendarType = CalendarAttr.CalendarType.SCHEDULE_MONTH;
+            if(lastType == CalendarAttr.CalendarType.MONTH){
+                v1.switchCalendarType(CalendarAttr.CalendarType.SCHEDULE_MONTH);
+                v2.switchCalendarType(CalendarAttr.CalendarType.SCHEDULE_MONTH);
+                v3.switchCalendarType(CalendarAttr.CalendarType.SCHEDULE_MONTH);
+            }else{
+                v1.switchCalendarType(CalendarAttr.CalendarType.SCHEDULE_MONTH);
+                v1.showDate(seedDate);
+
+                v2.switchCalendarType(CalendarAttr.CalendarType.SCHEDULE_MONTH);
+                CalendarDate last = seedDate.modifyMonth(-1);
+                last.setDay(1);
+                v2.showDate(last);
+
+                v3.switchCalendarType(CalendarAttr.CalendarType.SCHEDULE_MONTH);
+                CalendarDate next = seedDate.modifyMonth(1);
+                next.setDay(1);
+                v3.showDate(next);
+            }
+
+           /*
+            v1.switchCalendarType(CalendarAttr.CalendarType.SCHEDULE_MONTH);
+            v1.showDate(seedDate);
+
+            v2.switchCalendarType(CalendarAttr.CalendarType.SCHEDULE_MONTH);
+            CalendarDate last = seedDate.modifyMonth(-1);
+            last.setDay(1);
+            v2.showDate(last);
+
+            v3.switchCalendarType(CalendarAttr.CalendarType.SCHEDULE_MONTH);
+            CalendarDate next = seedDate.modifyMonth(1);
+            next.setDay(1);
+            v3.showDate(next);*/
+        }
+    }
+
     public void switchToMonth() {
         if (calendars != null && calendars.size() > 0 && calendarType != CalendarAttr.CalendarType.MONTH) {
             if (onCalendarTypeChangedListener != null) {

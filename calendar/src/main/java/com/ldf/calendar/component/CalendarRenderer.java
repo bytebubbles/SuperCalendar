@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.ldf.calendar.Const;
 import com.ldf.calendar.Utils;
@@ -44,7 +45,7 @@ public class CalendarRenderer {
     private void draw() {
         for (int row = 0; row < Const.TOTAL_ROW; row++) {
             int calendarIndex = row * 2;
-            RowCalendarView calendarView = (RowCalendarView) calendar.getChildAt(calendarIndex);
+            RowCalendarView calendarView = (RowCalendarView) ((ViewGroup)calendar.getChildAt(0)).getChildAt(calendarIndex);
 
             calendarView.drawDay(weeks[row].days,dayRenderer);
             //calendarView.invalidate();

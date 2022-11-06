@@ -2,6 +2,7 @@ package com.ldf.calendar.behavior;
 
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
@@ -9,10 +10,12 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.ldf.calendar.Utils;
 import com.ldf.calendar.component.CalendarAttr;
+import com.ldf.calendar.component.CalendarViewAdapter;
 import com.ldf.calendar.view.Calendar;
 import com.ldf.calendar.view.MonthPager;
 
@@ -86,6 +89,11 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
     }
 
     @Override
+    public void onNestedPreScroll(@NonNull CoordinatorLayout coordinatorLayout, @NonNull RecyclerView child, @NonNull View target, int dx, int dy, @NonNull int[] consumed, int type) {
+        super.onNestedPreScroll(coordinatorLayout, child, target, dx, dy, consumed, type);
+    }
+
+    @Override
     public void onNestedPreScroll(CoordinatorLayout coordinatorLayout, RecyclerView child,
                                   View target, int dx, int dy, int[] consumed) {
         Log.e("ldf", "onNestedPreScroll");
@@ -101,12 +109,12 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
         }
 
         // 上滑，正在隐藏顶部的日历
-        hidingTop = dy > 0 && child.getTop() <= monthOffset
+        hidingTop = dy > 0 && child.getTop() <= scheduleMonthOffset
                 && child.getTop() > getMonthPager(coordinatorLayout).getWeekHeight();
         // 下滑，正在展示顶部的日历
         showingTop = dy < 0 && !ViewCompat.canScrollVertically(target, -1);
 
-        if (hidingTop || showingTop) {
+        if (hidingTop ) {
             consumed[1] = Utils.scroll(child, dy,
                     getMonthPager(coordinatorLayout).getWeekHeight(),
                     getMonthPager(coordinatorLayout).getViewHeight());
@@ -118,7 +126,18 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
     public void onStopNestedScroll(final CoordinatorLayout parent, final RecyclerView child, View target) {
         Log.e("ldf", "onStopNestedScroll");
         super.onStopNestedScroll(parent, child, target);
-        MonthPager monthPager = (MonthPager) parent.getChildAt(0);
+
+        MonthPager wrapView = getMonthPager(parent);
+        wrapView.setScrollable(true);
+        if(showingTop
+                || Utils.loadTop() == wrapView.getWeekHeight()
+                || Utils.loadTop() == wrapView.getMonthHeight()
+                || Utils.loadTop() == wrapView.getScheduleHeight()
+        ) return;
+        //int scheduleToMonthTV = child.getMonthHeight() + (child.getViewHeight() - child.getMonthHeight())/2;
+        Utils.touchUp(parent, wrapView, hidingTop);
+
+       /* MonthPager monthPager = (MonthPager) parent.getChildAt(0);
         monthPager.setScrollable(true);
         if (!Utils.isScrollToBottom()) {
             if (monthOffset - Utils.loadTop() > Utils.getTouchSlop(context) && hidingTop) {
@@ -132,7 +151,7 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
             } else {
                 Utils.scrollTo(parent, child, getMonthPager(parent).getWeekHeight(), 150);
             }
-        }
+        }*/
     }
 
     @Override
@@ -158,13 +177,13 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
     private void saveTop(int top) {
         Utils.saveTop(top);
         if (Utils.loadTop() == monthOffset) {
-            Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
+            //Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
             Utils.setScrollToBottom(false);
         } else if (Utils.loadTop() == weekOffset) {
-            Calendar.setCurrCalendarType(CalendarAttr.CalendarType.WEEK);
+            //Calendar.setCurrCalendarType(CalendarAttr.CalendarType.WEEK);
             Utils.setScrollToBottom(true);
         } else if(Utils.loadTop() == scheduleMonthOffset){
-            Calendar.setCurrCalendarType(CalendarAttr.CalendarType.SCHEDULE_MONTH);
+           //` Calendar.setCurrCalendarType(CalendarAttr.CalendarType.SCHEDULE_MONTH);
         }
     }
 }

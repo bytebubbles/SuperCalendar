@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import com.ldf.calendar.Config;
@@ -20,7 +21,7 @@ import com.ldf.calendar.model.CalendarDate;
 import com.ldf.calendar.Utils;
 
 @SuppressLint("ViewConstructor")
-public class Calendar extends LinearLayout {
+public class Calendar extends FrameLayout {
     /**
      * 日历列数
      */
@@ -68,7 +69,7 @@ public class Calendar extends LinearLayout {
         this.context = context;
         touchSlop = Utils.getTouchSlop(context);
         initAttrAndRenderer();
-        setOrientation(VERTICAL);
+
     }
 
     private void initAttrAndRenderer() {
@@ -85,7 +86,7 @@ public class Calendar extends LinearLayout {
     @Override
     protected void onSizeChanged(int w, int h, int oldW, int oldH) {
         super.onSizeChanged(w, h, oldW, oldH);
-        cellHeight = h / Const.TOTAL_ROW;
+       // cellHeight = h / Const.TOTAL_ROW;
         cellWidth = w / Const.TOTAL_COL;
         calendarAttr.setCellHeight(cellHeight);
         calendarAttr.setCellWidth(cellWidth);
@@ -128,6 +129,20 @@ public class Calendar extends LinearLayout {
     public void switchCalendarType(CalendarAttr.CalendarType calendarType) {
         calendarAttr.setCalendarType(calendarType);
         renderer.setAttr(calendarAttr);
+
+        if(calendarType != CalendarAttr.CalendarType.WEEK){
+            View wrapView = getChildAt(0);
+            ViewGroup.LayoutParams layoutParams = wrapView.getLayoutParams();
+            ViewGroup.LayoutParams layoutParams1 = monthPager.getLayoutParams();
+            if(calendarType == CalendarAttr.CalendarType.MONTH){
+                layoutParams.height = monthPager.getMonthHeight();
+            }else if(calendarType == CalendarAttr.CalendarType.SCHEDULE_MONTH){
+                layoutParams.height = monthPager.getViewHeight();
+            }
+            layoutParams1.height = layoutParams.height;
+            wrapView.setLayoutParams(layoutParams);
+            monthPager.setLayoutParams(layoutParams1);
+        }
     }
 
     public int getCellHeight() {
@@ -156,7 +171,8 @@ public class Calendar extends LinearLayout {
 
     public void updateWeek(int rowCount) {
         renderer.updateWeek(rowCount);
-        invalidate();
+
+        //invalidate();
     }
 
     public void update() {
@@ -188,6 +204,12 @@ public class Calendar extends LinearLayout {
      * 数据准备完毕后，插入布局
      */
     public void initLayout() {
+        LinearLayout wrapLy = new LinearLayout(context);
+        wrapLy.setOrientation(LinearLayout.VERTICAL);
+        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, viewHeight);
+        wrapLy.setLayoutParams(layoutParams);
+        addView(wrapLy);
+
         Week[] weeks = renderer.getWeeks();
         for (int row = 0; row < Const.TOTAL_ROW; row++) {
 
@@ -200,14 +222,15 @@ public class Calendar extends LinearLayout {
 
             //日程层
             LinearLayout rowScheduleView = new LinearLayout(context);
-            ViewGroup.LayoutParams scheduleLayoutPas = new ViewGroup.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT,scheduleHeight);
+            LinearLayout.LayoutParams scheduleLayoutPas = new LinearLayout.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT,0);
+            scheduleLayoutPas.weight = 1;
             rowScheduleView.setLayoutParams(scheduleLayoutPas);
             rowScheduleView.setBackgroundColor(Color.RED);
 
             rowCalendarView.setTag(calendarTag + row);
             rowScheduleView.setTag(scheduleTag + row);
-            addView(rowCalendarView);
-            addView(rowScheduleView);
+            wrapLy.addView(rowCalendarView);
+            wrapLy.addView(rowScheduleView);
 
             /*if (weeks[row] != null) {
                 for (int col = 0; col < Const.TOTAL_COL; col++) {
@@ -227,6 +250,12 @@ public class Calendar extends LinearLayout {
     }
 
     public static CalendarAttr.CalendarType getCurrCalendarType() {
+       /* int scheduleToMonthTV = monthPager.getViewHeight() - 150;
+        int monthToScheduleTV = monthPager.getMonthHeight() + 150;
+        if(Utils.loadTop() > child.getMonthHeight()){
+           // if()
+        }
+*/
         return currCalendarType;
     }
 

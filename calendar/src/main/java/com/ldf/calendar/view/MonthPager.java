@@ -139,7 +139,7 @@ public class MonthPager extends ViewPager {
             return weekHeight;
         }
         rowIndex = calendarViewAdapter.getPagers().get(currentPosition % 3).getSelectedRowIndex();
-        return weekHeight * rowIndex + scheduleHeight * rowIndex;
+        return weekHeight * rowIndex + minScheduleHeight * rowIndex;
     }
 
     public int getWeekHeight() {
