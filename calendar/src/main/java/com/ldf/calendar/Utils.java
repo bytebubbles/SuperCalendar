@@ -357,8 +357,8 @@ public final class Utils {
                     //日程状态向月状态过渡
                     //TODO 切换为月状态
                     Utils.scrollTo2(parent, (RecyclerView) parent.getChildAt(1), child, wrapView,child.getMonthHeight(), 300);
-                    com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
                     calendarViewAdapter.switchToMonth();
+                    com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
                 }else {
                     //日程状态向月状态过渡失败，回弹
                     Utils.scrollTo2(parent, (RecyclerView) parent.getChildAt(1), child, wrapView,child.getViewHeight(), 300);
@@ -368,9 +368,9 @@ public final class Utils {
                 if(Utils.loadTop() > monthToScheduleTV){
                     //月状态向日程状态过渡
                     //TODO 切换为日程状态
-                    //com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.SCHEDULE_MONTH);
                     Utils.scrollTo2(parent, (RecyclerView) parent.getChildAt(1), child, wrapView,child.getViewHeight(), 300);
                     calendarViewAdapter.switchToSchedule();
+                    com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.SCHEDULE_MONTH);
                 }else {
                     //月状态向日程状态过度失败，回弹
                     Utils.scrollTo2(parent, (RecyclerView) parent.getChildAt(1), child, wrapView,child.getMonthHeight(), 300);
@@ -382,6 +382,7 @@ public final class Utils {
             //TODO 切换为月状态
             //com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
             calendarViewAdapter.switchToMonth();
+            com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
         }else{
             //Utils.loadTop() < child.getMonthHeight()
             if(directionUpa){
@@ -395,19 +396,20 @@ public final class Utils {
                     }
                     //com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.WEEK);
                     calendarViewAdapter.switchToWeek(child.getRowIndex());
+                    com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.WEEK);
                 }else {
                     //月状态向周状态过度失败，回弹
-                    com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
                     Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getMonthHeight(), 300);
-                    //calendarViewAdapter.switchToMonth();
+                    calendarViewAdapter.switchToMonth();
+                    com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
                 }
             }else{
                 if(Utils.loadTop() > Utils.loadTop() - monthToWeekTV){
                     //周状态向月状态过度
                     //TODO 切换为月状态
-                    //com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
                     Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getMonthHeight(), 300);
                     calendarViewAdapter.switchToMonth();
+                    com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
                 }else {
                     //周状态向月状态过度失败，回弹
                     Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getWeekHeight(), 300);

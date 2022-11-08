@@ -111,11 +111,21 @@ public class Calendar extends FrameLayout {
                 float disY = event.getY() - posY;
                 if (Math.abs(disX) < touchSlop && Math.abs(disY) < touchSlop) {
                     int col = (int) (posX / cellWidth);
-                    int row = (int) (posY / cellHeight);
-                    onAdapterSelectListener.cancelSelectState();
+                    int row ;
+                    if(Calendar.getCurrCalendarType() == CalendarAttr.CalendarType.MONTH
+                            || Calendar.getCurrCalendarType() == CalendarAttr.CalendarType.WEEK ){
+                        row = (int) (posY / (cellHeight + minScheduleHeight));
+                    }else{
+                        //if(Calendar.getCurrCalendarType() == CalendarAttr.CalendarType.SCHEDULE_MONTH)
+                        row = (int) (posY / (cellHeight + scheduleHeight));
+                    }/*else {
+                        row = (int) (posY / cellHeight);
+                    }*/
+                    cancelSelectState();
+                    //onAdapterSelectListener.cancelSelectState();
                     renderer.onClickDate(col, row);
                     onAdapterSelectListener.updateSelectState();
-                    invalidate();
+                    //invalidate();
                 }
                 break;
         }
@@ -139,6 +149,14 @@ public class Calendar extends FrameLayout {
             }else if(calendarType == CalendarAttr.CalendarType.SCHEDULE_MONTH){
                 layoutParams.height = monthPager.getViewHeight();
             }
+            layoutParams1.height = layoutParams.height;
+            wrapView.setLayoutParams(layoutParams);
+            monthPager.setLayoutParams(layoutParams1);
+        }else {
+            View wrapView = getChildAt(0);
+            ViewGroup.LayoutParams layoutParams = wrapView.getLayoutParams();
+            ViewGroup.LayoutParams layoutParams1 = monthPager.getLayoutParams();
+            layoutParams.height = monthPager.getMonthHeight();
             layoutParams1.height = layoutParams.height;
             wrapView.setLayoutParams(layoutParams);
             monthPager.setLayoutParams(layoutParams1);
@@ -261,5 +279,12 @@ public class Calendar extends FrameLayout {
 
     public static void setCurrCalendarType(CalendarAttr.CalendarType currCalendarType) {
         Calendar.currCalendarType = currCalendarType;
+    }
+
+    public void setSelectedCalendarDate(CalendarDate selectedDate){
+        renderer.setSelectedDate(selectedDate);
+    }
+    public CalendarDate getSelectedCalendarDate() {
+        return renderer.getSelectedCalendarDate();
     }
 }

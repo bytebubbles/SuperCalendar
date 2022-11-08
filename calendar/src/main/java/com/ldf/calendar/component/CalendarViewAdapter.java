@@ -52,6 +52,7 @@ public class CalendarViewAdapter extends PagerAdapter {
         saveSelectedDate(new CalendarDate());
         //初始化的种子日期为今天
         seedDate = new CalendarDate();
+        seedDate.setDay(1);
         for (int i = 0; i < 3; i++) {
             CalendarAttr calendarAttr = new CalendarAttr();
             calendarAttr.setCalendarType(calendarType);
@@ -60,12 +61,12 @@ public class CalendarViewAdapter extends PagerAdapter {
             calendar.setOnAdapterSelectListener(new OnAdapterSelectListener() {
                 @Override
                 public void cancelSelectState() {
-                    cancelOtherSelectState();
+                    //cancelOtherSelectState();
                 }
 
                 @Override
                 public void updateSelectState() {
-                    invalidateCurrentCalendar();
+                    //invalidateCurrentCalendar();
                 }
             });
             calendars.add(calendar);
@@ -87,12 +88,22 @@ public class CalendarViewAdapter extends PagerAdapter {
         }
         Calendar calendar = calendars.get(position % calendars.size());
         calendar.setMonthPager((MonthPager) container);
-        if (calendarType == CalendarAttr.CalendarType.MONTH) {
+        if (calendarType == CalendarAttr.CalendarType.MONTH
+                || calendarType == CalendarAttr.CalendarType.SCHEDULE_MONTH) {
             CalendarDate current = seedDate.modifyMonth(position - MonthPager.CURRENT_DAY_INDEX);
             current.setDay(1);//每月的种子日期都是1号
+            setSelectedCalendarInCalendar(calendar, current);
+            /*if(date.month == current.month){
+                calendar.setSelectedCalendarDate(date);
+            }else {
+                if(calendar.getSelectedCalendarDate() == null || current.month != calendar.getSelectedCalendarDate().month){
+                    calendar.setSelectedCalendarDate(current);
+                }
+            }*/
             calendar.showDate(current);
         } else {
-            CalendarDate current = seedDate.modifyWeek(position - MonthPager.CURRENT_DAY_INDEX);
+            CalendarDate current = date.modifyWeek(position - currentPosition);
+            calendar.setSelectedCalendarDate(current);
             if (weekArrayType == CalendarAttr.WeekArrayType.Sunday) {
                 calendar.showDate(Utils.getSaturday(current));
             } else {
@@ -142,6 +153,10 @@ public class CalendarViewAdapter extends PagerAdapter {
         return calendars.get(currentPosition % 3);
     }
 
+    public Calendar getCalendarViewByPosition(int pagerPosition){
+        return calendars.get(pagerPosition % 3);
+    }
+
     public void cancelOtherSelectState() {
         for (int i = 0; i < calendars.size(); i++) {
             Calendar calendar = calendars.get(i);
@@ -149,7 +164,7 @@ public class CalendarViewAdapter extends PagerAdapter {
         }
     }
 
-    public void invalidateCurrentCalendar() {
+/*    public void invalidateCurrentCalendar() {
         for (int i = 0; i < calendars.size(); i++) {
             Calendar calendar = calendars.get(i);
             calendar.update();
@@ -157,14 +172,15 @@ public class CalendarViewAdapter extends PagerAdapter {
                 calendar.updateWeek(rowCount);
             }
         }
-    }
+    }*/
 
     public void setMarkData(HashMap<String, String> markData) {
-        Utils.setMarkData(markData);
-        notifyDataChanged();
+        //Utils.setMarkData(markData);
+        //notifyDataChanged();
     }
 
     public void switchToSchedule(){
+        Log.d("switchTo", "switchToSchedule: ");
         if (calendars != null && calendars.size() > 0 && calendarType != CalendarAttr.CalendarType.SCHEDULE_MONTH) {
             if (onCalendarTypeChangedListener != null) {
                 onCalendarTypeChangedListener.onCalendarTypeChanged(CalendarAttr.CalendarType.SCHEDULE_MONTH);
@@ -217,6 +233,7 @@ public class CalendarViewAdapter extends PagerAdapter {
     }
 
     public void switchToMonth() {
+        Log.d("switchTo", "switchToMonth: ");
         if (calendars != null && calendars.size() > 0 && calendarType != CalendarAttr.CalendarType.MONTH) {
             if (onCalendarTypeChangedListener != null) {
                 onCalendarTypeChangedListener.onCalendarTypeChanged(CalendarAttr.CalendarType.MONTH);
@@ -234,23 +251,27 @@ public class CalendarViewAdapter extends PagerAdapter {
             v2.switchCalendarType(CalendarAttr.CalendarType.MONTH);
             CalendarDate last = seedDate.modifyMonth(-1);
             last.setDay(1);
+            setSelectedCalendarInCalendar(v2, last);
             v2.showDate(last);
 
             Calendar v3 = calendars.get((currentPosition + 1) % 3);//1
             v3.switchCalendarType(CalendarAttr.CalendarType.MONTH);
             CalendarDate next = seedDate.modifyMonth(1);
             next.setDay(1);
+            setSelectedCalendarInCalendar(v3, next);
             v3.showDate(next);
         }
     }
 
     public void switchToWeek(int rowIndex) {
+        Log.d("switchTo", "switchToWeek: ");
         rowCount = rowIndex;
         if (calendars != null && calendars.size() > 0 && calendarType != CalendarAttr.CalendarType.WEEK) {
             if (onCalendarTypeChangedListener != null) {
                 onCalendarTypeChangedListener.onCalendarTypeChanged(CalendarAttr.CalendarType.WEEK);
             }
             calendarType = CalendarAttr.CalendarType.WEEK;
+            Calendar.setCurrCalendarType(calendarType);
             MonthPager.CURRENT_DAY_INDEX = currentPosition;
             Calendar v = calendars.get(currentPosition % 3);
             seedDate = v.getSeedDate();
@@ -264,7 +285,8 @@ public class CalendarViewAdapter extends PagerAdapter {
 
             Calendar v2 = calendars.get((currentPosition - 1) % 3);
             v2.switchCalendarType(CalendarAttr.CalendarType.WEEK);
-            CalendarDate last = seedDate.modifyWeek(-1);
+            CalendarDate last = date.modifyWeek(-1);
+            v2.setSelectedCalendarDate(last);
             if (weekArrayType == CalendarAttr.WeekArrayType.Sunday) {
                 v2.showDate(Utils.getSaturday(last));
             } else {
@@ -272,25 +294,28 @@ public class CalendarViewAdapter extends PagerAdapter {
             }//每周的种子日期为这一周的最后一天
             v2.updateWeek(rowIndex);
 
+
             Calendar v3 = calendars.get((currentPosition + 1) % 3);
             v3.switchCalendarType(CalendarAttr.CalendarType.WEEK);
-            CalendarDate next = seedDate.modifyWeek(1);
+            CalendarDate next = date.modifyWeek(1);
+            v3.setSelectedCalendarDate(next);
             if (weekArrayType == CalendarAttr.WeekArrayType.Sunday) {
                 v3.showDate(Utils.getSaturday(next));
             } else {
                 v3.showDate(Utils.getSunday(next));
             }//每周的种子日期为这一周的最后一天
             v3.updateWeek(rowIndex);
+            //v3.setSelectedRowIndex(rowIndex + 1);
         }
     }
 
-    public void notifyMonthDataChanged(CalendarDate date) {
+/*    public void notifyMonthDataChanged(CalendarDate date) {
         seedDate = date;
         refreshCalendar();
-    }
+    }*/
 
     public void notifyDataChanged(CalendarDate date) {
-        seedDate = date;
+        //seedDate = date;
         saveSelectedDate(date);
         refreshCalendar();
     }
@@ -303,6 +328,7 @@ public class CalendarViewAdapter extends PagerAdapter {
         if (calendarType == CalendarAttr.CalendarType.WEEK) {
             MonthPager.CURRENT_DAY_INDEX = currentPosition;
             Calendar v1 = calendars.get(currentPosition % 3);
+            seedDate = v1.getSeedDate();
             v1.showDate(seedDate);
             v1.updateWeek(rowCount);
 
@@ -327,17 +353,31 @@ public class CalendarViewAdapter extends PagerAdapter {
             MonthPager.CURRENT_DAY_INDEX = currentPosition;
 
             Calendar v1 = calendars.get(currentPosition % 3);//0
+            seedDate = v1.getSeedDate();
+            setSelectedCalendarInCalendar(v1, seedDate);
             v1.showDate(seedDate);
 
             Calendar v2 = calendars.get((currentPosition - 1) % 3);//2
             CalendarDate last = seedDate.modifyMonth(-1);
             last.setDay(1);
+            setSelectedCalendarInCalendar(v2, last);
             v2.showDate(last);
 
             Calendar v3 = calendars.get((currentPosition + 1) % 3);//1
             CalendarDate next = seedDate.modifyMonth(1);
             next.setDay(1);
+            setSelectedCalendarInCalendar(v3, next);
             v3.showDate(next);
+        }
+    }
+
+    private void setSelectedCalendarInCalendar(Calendar calendar, CalendarDate seedDate){
+        if(date.month == seedDate.month){
+            calendar.setSelectedCalendarDate(date);
+        }else {
+            if(calendar.getSelectedCalendarDate() == null || seedDate.month != calendar.getSelectedCalendarDate().month){
+                calendar.setSelectedCalendarDate(seedDate);
+            }
         }
     }
 
@@ -359,6 +399,10 @@ public class CalendarViewAdapter extends PagerAdapter {
 
         Calendar c2 = calendars.get(2);
         c2.setDayRenderer(dayRenderer.copy());
+    }
+
+    public void setCurrentPosition(int currentPosition) {
+        this.currentPosition = currentPosition;
     }
 
     public void setOnCalendarTypeChangedListener(OnCalendarTypeChanged onCalendarTypeChangedListener) {

@@ -52,6 +52,12 @@ public class MonthPager extends ViewPager {
             @Override
             public void onPageSelected(int position) {
                 currentPosition = position;
+                CalendarViewAdapter calendarViewAdapter = (CalendarViewAdapter) getAdapter();
+                calendarViewAdapter.setCurrentPosition(position);
+                if(calendarViewAdapter.getCalendarViewByPosition(currentPosition).getSelectedCalendarDate() != null){
+                    CalendarViewAdapter.saveSelectedDate(calendarViewAdapter.getCalendarViewByPosition(currentPosition).getSelectedCalendarDate());
+                }
+
                 if (pageChangeByGesture) {
                     if (monthPageChangeListener != null) {
                         monthPageChangeListener.onPageSelected(position);

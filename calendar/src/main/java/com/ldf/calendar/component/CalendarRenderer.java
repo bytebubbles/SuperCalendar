@@ -69,32 +69,35 @@ public class CalendarRenderer {
         if (col >= Const.TOTAL_COL || row >= Const.TOTAL_ROW)
             return;
         if (weeks[row] != null) {
-            if (attr.getCalendarType() == CalendarAttr.CalendarType.MONTH) {
+            if (attr.getCalendarType() == CalendarAttr.CalendarType.MONTH
+                || attr.getCalendarType() == CalendarAttr.CalendarType.SCHEDULE_MONTH) {
                 if (weeks[row].days[col].getState() == State.CURRENT_MONTH) {
                     weeks[row].days[col].setState(State.SELECT);
                     selectedDate = weeks[row].days[col].getDate();
                     CalendarViewAdapter.saveSelectedDate(selectedDate);
                     onSelectDateListener.onSelectDate(selectedDate);
-                    seedDate = selectedDate;
+                    //seedDate = selectedDate;
                 } else if (weeks[row].days[col].getState() == State.PAST_MONTH) {
-                    selectedDate = weeks[row].days[col].getDate();
-                    CalendarViewAdapter.saveSelectedDate(selectedDate);
+                    CalendarDate tempSelectedDate = weeks[row].days[col].getDate();
+                    CalendarViewAdapter.saveSelectedDate(tempSelectedDate);
                     onSelectDateListener.onSelectOtherMonth(-1);
-                    onSelectDateListener.onSelectDate(selectedDate);
+                    onSelectDateListener.onSelectDate(tempSelectedDate);
                 } else if (weeks[row].days[col].getState() == State.NEXT_MONTH) {
-                    selectedDate = weeks[row].days[col].getDate();
-                    CalendarViewAdapter.saveSelectedDate(selectedDate);
+                    CalendarDate tempSelectedDate = weeks[row].days[col].getDate();
+                    CalendarViewAdapter.saveSelectedDate(tempSelectedDate);
                     onSelectDateListener.onSelectOtherMonth(1);
-                    onSelectDateListener.onSelectDate(selectedDate);
+                    onSelectDateListener.onSelectDate(tempSelectedDate);
                 }
             } else {
                 weeks[row].days[col].setState(State.SELECT);
                 selectedDate = weeks[row].days[col].getDate();
                 CalendarViewAdapter.saveSelectedDate(selectedDate);
                 onSelectDateListener.onSelectDate(selectedDate);
-                seedDate = selectedDate;
+                //seedDate = selectedDate;
             }
+            selectedRowIndex = row;
         }
+        draw();
     }
 
     /**
@@ -105,10 +108,14 @@ public class CalendarRenderer {
      */
     public void updateWeek(int rowIndex) {
         CalendarDate currentWeekLastDay;
+        CalendarDate tempDate = selectedDate;
+        if(tempDate == null){
+            tempDate = seedDate;
+        }
         if (attr.getWeekArrayType() == CalendarAttr.WeekArrayType.Sunday) {
-            currentWeekLastDay = Utils.getSaturday(seedDate);
+            currentWeekLastDay = Utils.getSaturday(tempDate);
         } else {
-            currentWeekLastDay = Utils.getSunday(seedDate);
+            currentWeekLastDay = Utils.getSunday(tempDate);
         }
         int day = currentWeekLastDay.day;
         for (int i = Const.TOTAL_COL - 1; i >= 0; i--) {
@@ -117,7 +124,7 @@ public class CalendarRenderer {
                 weeks[rowIndex] = new Week(rowIndex);
             }
             if (weeks[rowIndex].days[i] != null) {
-                if (date.equals(CalendarViewAdapter.loadSelectedDate())) {
+                if (date.equals(selectedDate)) {
                     weeks[rowIndex].days[i].setState(State.SELECT);
                     weeks[rowIndex].days[i].setDate(date);
                 } else {
@@ -125,7 +132,7 @@ public class CalendarRenderer {
                     weeks[rowIndex].days[i].setDate(date);
                 }
             } else {
-                if (date.equals(CalendarViewAdapter.loadSelectedDate())) {
+                if (date.equals(selectedDate)) {
                     weeks[rowIndex].days[i] = new Day(State.SELECT, date, rowIndex, i);
                 } else {
                     weeks[rowIndex].days[i] = new Day(State.CURRENT_MONTH, date, rowIndex, i);
@@ -137,7 +144,7 @@ public class CalendarRenderer {
 
     /**
      * 填充月数据
-     *
+     * 注意: 周模式下 如果选的是 当月的日期，但是 seedDate 为下月的，需要转为当月的
      * @return void
      */
     private void instantiateMonth() {
@@ -148,6 +155,23 @@ public class CalendarRenderer {
                 seedDate.month,
                 attr.getWeekArrayType());
         Log.e("ldf","firstDayPosition = " + firstDayPosition);
+       /* if(Calendar.getCurrCalendarType() == CalendarAttr.CalendarType.MONTH
+        || Calendar.getCurrCalendarType() == CalendarAttr.CalendarType.SCHEDULE_MONTH){
+            if(CalendarViewAdapter.loadSelectedDate().month == seedDate.month){
+                selectedDate = CalendarViewAdapter.loadSelectedDate();
+            }else {
+                if(selectedDate == null ){
+                    selectedDate = seedDate;
+                }
+
+                //CalendarViewAdapter.saveSelectedDate(seedDate);
+            }
+        }else {
+            if(selectedDate == null){
+                selectedDate = seedDate;
+            }
+            //CalendarViewAdapter.saveSelectedDate(seedDate);
+        }*/
 
         int day = 0;
         for (int row = 0; row < Const.TOTAL_ROW; row++) {
@@ -197,7 +221,7 @@ public class CalendarRenderer {
             weeks[row] = new Week(row);
         }
         if (weeks[row].days[col] != null) {
-            if (date.equals(CalendarViewAdapter.loadSelectedDate())) {
+            if (date.equals(selectedDate)) {
                 weeks[row].days[col].setDate(date);
                 weeks[row].days[col].setState(State.SELECT);
             } else {
@@ -205,13 +229,13 @@ public class CalendarRenderer {
                 weeks[row].days[col].setState(State.CURRENT_MONTH);
             }
         } else {
-            if (date.equals(CalendarViewAdapter.loadSelectedDate())) {
+            if (date.equals(selectedDate)) {
                 weeks[row].days[col] = new Day(State.SELECT, date, row, col);
             } else {
                 weeks[row].days[col] = new Day(State.CURRENT_MONTH, date, row, col);
             }
         }
-        if (date.equals(seedDate)) {
+        if (date.equals(selectedDate) ) {
             selectedRowIndex = row;
         }
     }
@@ -262,10 +286,19 @@ public class CalendarRenderer {
      */
     public void showDate(CalendarDate seedDate) {
         if (seedDate != null) {
-            this.seedDate = seedDate;
+            if(Calendar.getCurrCalendarType() == CalendarAttr.CalendarType.WEEK
+                && seedDate.month != selectedDate.month){
+                this.seedDate = selectedDate;
+            }else {
+                this.seedDate = seedDate;
+            }
+
         } else {
             this.seedDate = new CalendarDate();
         }
+       /* if(selectedDate == null){
+            selectedDate = seedDate;
+        }*/
         update();
     }
 
@@ -341,5 +374,13 @@ public class CalendarRenderer {
 
     public Week[] getWeeks() {
         return weeks;
+    }
+
+    public void setSelectedDate(CalendarDate selectedDate) {
+        this.selectedDate = selectedDate;
+    }
+
+    public CalendarDate getSelectedCalendarDate() {
+        return selectedDate;
     }
 }

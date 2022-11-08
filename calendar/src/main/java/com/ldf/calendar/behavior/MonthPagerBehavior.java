@@ -84,6 +84,7 @@ public class MonthPagerBehavior extends CoordinatorLayout.Behavior<MonthPager> {
                         float leftTop = Utils.loadTop() + ((ev.getY() - lastY));
                         if(leftTop > child.getWeekHeight()){
                             saveTop((int) leftTop);
+                            //Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getWeekHeight(), 30);
                             Utils.scroll(parent.getChildAt(1), (int) (lastY - ev.getY()), child.getWeekHeight(), child.getMonthHeight());
                             Log.d("2342342", "onTouchEvent: leftTop > child.getWeekHeight() top:" +Utils.loadTop()  + "  getWeekHeight：" + child.getWeekHeight());
                         }else {
@@ -100,7 +101,7 @@ public class MonthPagerBehavior extends CoordinatorLayout.Behavior<MonthPager> {
                             Utils.scroll(parent.getChildAt(1), (int) (lastY - ev.getY()), child.getWeekHeight(), child.getMonthHeight());
                         }else {
                             Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getWeekHeight(), 30);
-                            ((RecyclerView) parent.getChildAt(1)).requestDisallowInterceptTouchEvent(false);
+                            //((RecyclerView) parent.getChildAt(1)).requestDisallowInterceptTouchEvent(false);
                             Log.d("9999", "onTouchEvent: 11111");
                             return false;
                         }

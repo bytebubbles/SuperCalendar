@@ -85,7 +85,7 @@ public class SyllabusActivity extends AppCompatActivity {
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus && !initiated) {
-            refreshMonthPager();
+            //refreshMonthPager();
             initiated = true;
         }
     }
