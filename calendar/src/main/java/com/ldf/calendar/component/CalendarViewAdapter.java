@@ -293,6 +293,16 @@ public class CalendarViewAdapter extends PagerAdapter {
                 v2.showDate(Utils.getSunday(last));
             }//每周的种子日期为这一周的最后一天
             v2.updateWeek(rowIndex);
+            /**
+             * 判断当前是否第一行，
+             *  是：再判断选中的是否是上个月的最后一行
+             *  不是: 直接 -1
+             */
+            /*if(rowIndex == 0){
+                //如果是当前页是第0行，如果0行里有上个月的日期，这实际就是上个月的倒数第二行，如果没有上月日期，这就是倒数第一行
+
+            }*/
+            v2.setSelectedRowIndex(rowIndex);
 
 
             Calendar v3 = calendars.get((currentPosition + 1) % 3);
@@ -411,6 +421,16 @@ public class CalendarViewAdapter extends PagerAdapter {
 
     public CalendarAttr.WeekArrayType getWeekArrayType() {
         return weekArrayType;
+    }
+
+    public void saveSelectedDateToLastPager(CalendarDate lastSelectedDate) {
+        getCalendarViewByPosition(currentPosition - 1).setSelectedCalendarDate(lastSelectedDate);
+    }
+
+
+    public void saveSelectedDateToNextPager(CalendarDate nextSelectedDate) {
+        getCalendarViewByPosition(currentPosition + 1).setSelectedCalendarDate(nextSelectedDate);
+
     }
 
     public interface OnCalendarTypeChanged {

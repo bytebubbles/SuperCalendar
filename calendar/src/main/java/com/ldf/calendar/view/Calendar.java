@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 
 import com.ldf.calendar.Config;
 import com.ldf.calendar.Const;
+import com.ldf.calendar.component.CalendarViewAdapter;
 import com.ldf.calendar.interf.IDayRenderer;
 import com.ldf.calendar.interf.OnAdapterSelectListener;
 import com.ldf.calendar.component.CalendarAttr;
@@ -42,6 +43,9 @@ public class Calendar extends FrameLayout {
     private float touchSlop;
     private MonthPager monthPager;
     private int viewHeight;
+    private int totalCol = Const.TOTAL_COL;
+    private int totalRow = Const.TOTAL_ROW;
+
     private final static String scheduleTag = "schedule";
     private final static String scheduleCellTag = "schedule_cell";
     private final static String calendarTag = "calendar";
@@ -286,5 +290,31 @@ public class Calendar extends FrameLayout {
     }
     public CalendarDate getSelectedCalendarDate() {
         return renderer.getSelectedCalendarDate();
+    }
+
+    public void saveSelectedDateToNextPager(CalendarDate nextSelectedDate) {
+        CalendarViewAdapter adapter = (CalendarViewAdapter) monthPager.getAdapter();
+        adapter.saveSelectedDateToNextPager(nextSelectedDate);
+    }
+
+    public void saveSelectedDateToLastPager(CalendarDate lastSelectedDate){
+        CalendarViewAdapter adapter = (CalendarViewAdapter) monthPager.getAdapter();
+        adapter.saveSelectedDateToLastPager(lastSelectedDate);
+    }
+
+    public int getTotalCol() {
+        return totalCol;
+    }
+
+    public void setTotalCol(int totalCol) {
+        this.totalCol = totalCol;
+    }
+
+    public int getTotalRow() {
+        return totalRow;
+    }
+
+    public void setTotalRow(int totalRow) {
+        this.totalRow = totalRow;
     }
 }

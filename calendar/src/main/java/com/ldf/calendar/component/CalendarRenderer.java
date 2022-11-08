@@ -79,12 +79,14 @@ public class CalendarRenderer {
                     //seedDate = selectedDate;
                 } else if (weeks[row].days[col].getState() == State.PAST_MONTH) {
                     CalendarDate tempSelectedDate = weeks[row].days[col].getDate();
-                    CalendarViewAdapter.saveSelectedDate(tempSelectedDate);
+                    calendar.saveSelectedDateToLastPager(tempSelectedDate);
+                    //CalendarViewAdapter.saveSelectedDate(tempSelectedDate);
                     onSelectDateListener.onSelectOtherMonth(-1);
                     onSelectDateListener.onSelectDate(tempSelectedDate);
                 } else if (weeks[row].days[col].getState() == State.NEXT_MONTH) {
                     CalendarDate tempSelectedDate = weeks[row].days[col].getDate();
-                    CalendarViewAdapter.saveSelectedDate(tempSelectedDate);
+                    //CalendarViewAdapter.saveSelectedDate(tempSelectedDate);
+                    calendar.saveSelectedDateToNextPager(tempSelectedDate);
                     onSelectDateListener.onSelectOtherMonth(1);
                     onSelectDateListener.onSelectDate(tempSelectedDate);
                 }
