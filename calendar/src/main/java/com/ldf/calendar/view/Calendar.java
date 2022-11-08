@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -223,7 +224,7 @@ public class Calendar extends FrameLayout {
 
 
     /**
-     * 数据准备完毕后，插入布局
+     * 先插入布局
      */
     public void initLayout() {
         LinearLayout wrapLy = new LinearLayout(context);
@@ -233,27 +234,9 @@ public class Calendar extends FrameLayout {
         addView(wrapLy);
 
         Week[] weeks = renderer.getWeeks();
-        for (int row = 0; row < Const.TOTAL_ROW; row++) {
+        for (int row = 0; row < 6; row++) {
 
-            //插入周，分两层，一层是用画布绘制的日历，一层是LinerLayout存放日程item
-            //日历层
-            View rowCalendarView = new RowCalendarView(context);
-            ViewGroup.LayoutParams calendarLayoutPas = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,cellHeight);
-            rowCalendarView.setLayoutParams(calendarLayoutPas);
-            //rowCalendarView.setBackgroundColor(Color.BLUE);
-
-            //日程层
-            LinearLayout rowScheduleView = new LinearLayout(context);
-            LinearLayout.LayoutParams scheduleLayoutPas = new LinearLayout.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT,0);
-            scheduleLayoutPas.weight = 1;
-            rowScheduleView.setLayoutParams(scheduleLayoutPas);
-            rowScheduleView.setBackgroundColor(Color.RED);
-
-            rowCalendarView.setTag(calendarTag + row);
-            rowScheduleView.setTag(scheduleTag + row);
-            wrapLy.addView(rowCalendarView);
-            wrapLy.addView(rowScheduleView);
-
+            addRowView(wrapLy, row);
             /*if (weeks[row] != null) {
                 for (int col = 0; col < Const.TOTAL_COL; col++) {
                     if (weeks[row].days[col] != null) {
@@ -262,6 +245,28 @@ public class Calendar extends FrameLayout {
                 }
             }*/
         }
+
+    }
+
+    private void addRowView(ViewGroup wrapLy,int row){
+        //插入周，分两层，一层是用画布绘制的日历，一层是LinerLayout存放日程item
+        //日历层
+        View rowCalendarView = new RowCalendarView(context);
+        ViewGroup.LayoutParams calendarLayoutPas = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,cellHeight);
+        rowCalendarView.setLayoutParams(calendarLayoutPas);
+        //rowCalendarView.setBackgroundColor(Color.BLUE);
+
+        //日程层
+        LinearLayout rowScheduleView = new LinearLayout(context);
+        LinearLayout.LayoutParams scheduleLayoutPas = new LinearLayout.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT,0);
+        scheduleLayoutPas.weight = 1;
+        rowScheduleView.setLayoutParams(scheduleLayoutPas);
+        rowScheduleView.setBackgroundColor(Color.RED);
+
+        rowCalendarView.setTag(calendarTag + row);
+        rowScheduleView.setTag(scheduleTag + row);
+        wrapLy.addView(rowCalendarView);
+        wrapLy.addView(rowScheduleView);
 
     }
 
@@ -315,6 +320,39 @@ public class Calendar extends FrameLayout {
     }
 
     public void setTotalRow(int totalRow) {
+        //initLayoutByRow(totalRow);
+
+
+        ViewGroup wrapView = (ViewGroup) getChildAt(0);
+        //int diffViewCount = wrapView.getChildCount() - getTotalRow()*2;
+        //if(diffViewCount == 0) return;
+        if(totalRow == 5){
+            wrapView.getChildAt(wrapView.getChildCount()-2).setVisibility(View.INVISIBLE);
+            wrapView.getChildAt(wrapView.getChildCount()-1).setVisibility(View.INVISIBLE);
+            //wrapView.removeViews(wrapView.getChildCount()-diffViewCount, diffViewCount);
+        }else {
+            //addRowView(wrapView, wrapView.getChildCount()-1);
+            wrapView.getChildAt(wrapView.getChildCount()-2).setVisibility(View.VISIBLE);
+            wrapView.getChildAt(wrapView.getChildCount()-1).setVisibility(View.VISIBLE);
+        }
         this.totalRow = totalRow;
     }
+
+    /*public void initLayoutByRow(int totalRow) {
+        ViewGroup wrapView = (ViewGroup) getChildAt(0);
+        if(wrapView != null && wrapView.getChildCount() == totalRow * 2) return;
+        //wrapView.removeAllViews();
+        removeView(wrapView);
+        int wrapHeight = totalRow * (cellHeight + scheduleHeight);
+        Log.d("wrapHeight", "initLayoutByRow: " + wrapHeight);
+        LinearLayout wrapLy = new LinearLayout(context);
+        wrapLy.setOrientation(LinearLayout.VERTICAL);
+        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, wrapHeight);
+        wrapLy.setLayoutParams(layoutParams);
+        addView(wrapLy);
+        for (int row = 0; row < totalRow; row++) {
+            addRowView(wrapLy, row);
+        }
+
+    }*/
 }

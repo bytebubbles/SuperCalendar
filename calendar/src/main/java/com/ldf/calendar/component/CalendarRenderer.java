@@ -43,7 +43,7 @@ public class CalendarRenderer {
      * @return void
      */
     private void draw() {
-        for (int row = 0; row < Const.TOTAL_ROW; row++) {
+        for (int row = 0; row < calendar.getTotalRow(); row++) {
             int calendarIndex = row * 2;
             RowCalendarView calendarView = (RowCalendarView) ((ViewGroup)calendar.getChildAt(0)).getChildAt(calendarIndex);
 
@@ -66,7 +66,7 @@ public class CalendarRenderer {
      * @return void
      */
     public void onClickDate(int col, int row) {
-        if (col >= Const.TOTAL_COL || row >= Const.TOTAL_ROW)
+        if (col >= Const.TOTAL_COL || row >= calendar.getTotalCol())
             return;
         if (weeks[row] != null) {
             if (attr.getCalendarType() == CalendarAttr.CalendarType.MONTH
@@ -98,8 +98,9 @@ public class CalendarRenderer {
                 //seedDate = selectedDate;
             }
             selectedRowIndex = row;
+            draw();
         }
-        draw();
+
     }
 
     /**
@@ -157,26 +158,18 @@ public class CalendarRenderer {
                 seedDate.month,
                 attr.getWeekArrayType());
         Log.e("ldf","firstDayPosition = " + firstDayPosition);
-       /* if(Calendar.getCurrCalendarType() == CalendarAttr.CalendarType.MONTH
-        || Calendar.getCurrCalendarType() == CalendarAttr.CalendarType.SCHEDULE_MONTH){
-            if(CalendarViewAdapter.loadSelectedDate().month == seedDate.month){
-                selectedDate = CalendarViewAdapter.loadSelectedDate();
-            }else {
-                if(selectedDate == null ){
-                    selectedDate = seedDate;
-                }
-
-                //CalendarViewAdapter.saveSelectedDate(seedDate);
-            }
+        int  fiveRowGrid = 5 * 7;
+        int diff = fiveRowGrid - currentMonthDays;
+        if(firstDayPosition <= diff){
+            //5行
+            calendar.setTotalRow(5);
         }else {
-            if(selectedDate == null){
-                selectedDate = seedDate;
-            }
-            //CalendarViewAdapter.saveSelectedDate(seedDate);
-        }*/
-
+            //6行
+            calendar.setTotalRow(6);
+        }
+        //weeks = new Week[calendar.getTotalRow()];
         int day = 0;
-        for (int row = 0; row < Const.TOTAL_ROW; row++) {
+        for (int row = 0; row < calendar.getTotalRow(); row++) {
             day = fillWeek(lastMonthDays, currentMonthDays, firstDayPosition, day, row);
         }
     }
@@ -317,7 +310,7 @@ public class CalendarRenderer {
     }
 
     public void cancelSelectState() {
-        for (int i = 0; i < Const.TOTAL_ROW; i++) {
+        for (int i = 0; i < calendar.getTotalRow(); i++) {
             if (weeks[i] != null) {
                 for (int j = 0; j < Const.TOTAL_COL; j++) {
                     if (weeks[i].days[j].getState() == State.SELECT) {
