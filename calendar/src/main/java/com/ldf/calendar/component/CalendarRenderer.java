@@ -110,7 +110,8 @@ public class CalendarRenderer {
      * @return void
      */
     public void updateWeek(int rowIndex) {
-        CalendarDate currentWeekLastDay;
+
+        /*CalendarDate currentWeekLastDay;
         CalendarDate tempDate = selectedDate;
         if(tempDate == null){
             tempDate = seedDate;
@@ -142,7 +143,8 @@ public class CalendarRenderer {
                 }
             }
             day--;
-        }
+        }*/
+
     }
 
     /**
@@ -158,7 +160,8 @@ public class CalendarRenderer {
                 seedDate.month,
                 attr.getWeekArrayType());
         Log.e("ldf","firstDayPosition = " + firstDayPosition);
-        int  fiveRowGrid = 5 * 7;
+        calendar.setTotalRow(Utils.totalRowCount(seedDate.year, seedDate.month, attr.getWeekArrayType()));
+       /* int  fiveRowGrid = 5 * 7;
         int diff = fiveRowGrid - currentMonthDays;
         if(firstDayPosition <= diff){
             //5行
@@ -166,7 +169,7 @@ public class CalendarRenderer {
         }else {
             //6行
             calendar.setTotalRow(6);
-        }
+        }*/
         //weeks = new Week[calendar.getTotalRow()];
         int day = 0;
         for (int row = 0; row < calendar.getTotalRow(); row++) {
@@ -280,7 +283,7 @@ public class CalendarRenderer {
      * @return void
      */
     public void showDate(CalendarDate seedDate) {
-        if (seedDate != null) {
+        /*if (seedDate != null) {
             if(Calendar.getCurrCalendarType() == CalendarAttr.CalendarType.WEEK
                 && seedDate.month != selectedDate.month){
                 this.seedDate = selectedDate;
@@ -290,10 +293,11 @@ public class CalendarRenderer {
 
         } else {
             this.seedDate = new CalendarDate();
-        }
+        }*/
        /* if(selectedDate == null){
             selectedDate = seedDate;
         }*/
+        this.seedDate = seedDate;
         update();
     }
 
@@ -373,6 +377,7 @@ public class CalendarRenderer {
 
     public void setSelectedDate(CalendarDate selectedDate) {
         this.selectedDate = selectedDate;
+        //draw();
     }
 
     public CalendarDate getSelectedCalendarDate() {

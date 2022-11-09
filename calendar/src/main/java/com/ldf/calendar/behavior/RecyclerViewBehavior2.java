@@ -18,6 +18,7 @@ import com.ldf.calendar.component.CalendarAttr;
 import com.ldf.calendar.component.CalendarViewAdapter;
 import com.ldf.calendar.view.Calendar;
 import com.ldf.calendar.view.MonthPager;
+import com.ldf.calendar.view.WrapMonthPager;
 
 public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerView> {
     private int monthOffset = -1;
@@ -81,7 +82,7 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
                                        View directTargetChild, View target, int nestedScrollAxes) {
         Log.e("ldf", "onStartNestedScroll");
 
-        MonthPager monthPager = (MonthPager) coordinatorLayout.getChildAt(0);
+        MonthPager monthPager = (MonthPager) getMonthPager(coordinatorLayout);
         monthPager.setScrollable(false);
         boolean isVertical = (nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0;
 
@@ -100,7 +101,7 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
         super.onNestedPreScroll(coordinatorLayout, child, target, dx, dy, consumed);
         child.setVerticalScrollBarEnabled(true);
 
-        MonthPager monthPager = (MonthPager) coordinatorLayout.getChildAt(0);
+        MonthPager monthPager = (MonthPager) getMonthPager(coordinatorLayout);
         if (monthPager.getPageScrollState() != ViewPager.SCROLL_STATE_IDLE) {
             consumed[1] = dy;
             Log.w("ldf", "onNestedPreScroll: MonthPager dragging");
@@ -171,7 +172,7 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
     }
 
     private MonthPager getMonthPager(CoordinatorLayout coordinatorLayout) {
-        return (MonthPager) coordinatorLayout.getChildAt(0);
+        return ((WrapMonthPager) coordinatorLayout.getChildAt(0)).getMonthPager();
     }
 
     private void saveTop(int top) {

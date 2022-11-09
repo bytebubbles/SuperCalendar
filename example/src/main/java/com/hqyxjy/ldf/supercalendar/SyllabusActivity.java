@@ -1,5 +1,7 @@
 package com.hqyxjy.ldf.supercalendar;
 
+import static com.ldf.calendar.behavior.MonthPagerBehavior.test;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
@@ -20,6 +22,7 @@ import com.ldf.calendar.interf.OnSelectDateListener;
 import com.ldf.calendar.component.CalendarViewAdapter;
 import com.ldf.calendar.model.CalendarDate;
 import com.ldf.calendar.view.Calendar;
+import com.ldf.calendar.view.WrapMonthPager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +38,7 @@ public class SyllabusActivity extends AppCompatActivity {
     TextView backToday;
     CoordinatorLayout content;
     MonthPager monthPager;
+    WrapMonthPager wrapMonthPager;
     RecyclerView rvToDoList;
     TextView scrollSwitch;
     TextView themeSwitch;
@@ -55,7 +59,8 @@ public class SyllabusActivity extends AppCompatActivity {
         setContentView(R.layout.activity_syllabus);
         context = this;
         content = (CoordinatorLayout) findViewById(R.id.content);
-        monthPager = (MonthPager) findViewById(R.id.calendar_view);
+        wrapMonthPager = (WrapMonthPager) findViewById(R.id.calendar_view);
+        monthPager = wrapMonthPager.getMonthPager();
         //此处强行setViewHeight，毕竟你知道你的日历牌的高度
         //monthPager.setCellAndScheduleHeight(Utils.dpi2px(context, 45), Utils.dpi2px(context, 65), Utils.dpi2px(context, 15));
         tvYear = (TextView) findViewById(R.id.show_year_view);

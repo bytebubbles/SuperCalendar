@@ -104,8 +104,8 @@ public class Calendar extends FrameLayout {
     /*
      * 触摸事件为了确定点击的位置日期
      */
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    //@Override
+    public boolean onSubTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 posX = event.getX();
@@ -148,23 +148,26 @@ public class Calendar extends FrameLayout {
         if(calendarType != CalendarAttr.CalendarType.WEEK){
             View wrapView = getChildAt(0);
             ViewGroup.LayoutParams layoutParams = wrapView.getLayoutParams();
-            ViewGroup.LayoutParams layoutParams1 = monthPager.getLayoutParams();
             if(calendarType == CalendarAttr.CalendarType.MONTH){
-                layoutParams.height = monthPager.getMonthHeight();
+                if(layoutParams.height !=  monthPager.getMonthHeight()){
+                    layoutParams.height = monthPager.getMonthHeight();
+                    wrapView.setLayoutParams(layoutParams);
+                }
+
             }else if(calendarType == CalendarAttr.CalendarType.SCHEDULE_MONTH){
-                layoutParams.height = monthPager.getViewHeight();
+                if(layoutParams.height != monthPager.getViewHeight()){
+                    layoutParams.height = monthPager.getViewHeight();
+                    wrapView.setLayoutParams(layoutParams);
+                }
             }
-            layoutParams1.height = layoutParams.height;
-            wrapView.setLayoutParams(layoutParams);
-            monthPager.setLayoutParams(layoutParams1);
         }else {
+
             View wrapView = getChildAt(0);
             ViewGroup.LayoutParams layoutParams = wrapView.getLayoutParams();
-            ViewGroup.LayoutParams layoutParams1 = monthPager.getLayoutParams();
-            layoutParams.height = monthPager.getMonthHeight();
-            layoutParams1.height = layoutParams.height;
-            wrapView.setLayoutParams(layoutParams);
-            monthPager.setLayoutParams(layoutParams1);
+            if(layoutParams.height != monthPager.getMonthHeight()){
+                layoutParams.height = monthPager.getMonthHeight();
+                wrapView.setLayoutParams(layoutParams);
+            }
         }
     }
 
@@ -193,7 +196,9 @@ public class Calendar extends FrameLayout {
     }
 
     public void updateWeek(int rowCount) {
-        renderer.updateWeek(rowCount);
+        renderer.setSelectedRowIndex(rowCount);
+        offsetYByRowIndex();
+        //renderer.updateWeek(rowCount);
 
         //invalidate();
     }
@@ -228,6 +233,14 @@ public class Calendar extends FrameLayout {
      */
     public void initLayout() {
         LinearLayout wrapLy = new LinearLayout(context);
+        wrapLy.setTag(1);
+        wrapLy.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                return onSubTouchEvent(event);
+            }
+        });
         wrapLy.setOrientation(LinearLayout.VERTICAL);
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, viewHeight);
         wrapLy.setLayoutParams(layoutParams);
@@ -355,4 +368,36 @@ public class Calendar extends FrameLayout {
         }
 
     }*/
+
+    public void offsetYByRowIndex(){
+
+        final View view = getChildAt(0);
+        final int offset = getTopMovableDistance();
+        int top = view.getTop();
+        if(top != -offset){
+            view.post(new Runnable() {
+                @Override
+                public void run() {
+                    view.setTop(-offset);
+                   // view.offsetTopAndBottom(-offset);
+                }
+            });
+        }
+
+    }
+
+    public void resetOffsetY(){
+        final View view = getChildAt(0);
+        view.post(new Runnable() {
+            @Override
+            public void run() {
+                view.setTop(0);
+            }
+        });
+    }
+
+    public int getTopMovableDistance() {
+
+        return cellHeight * getSelectedRowIndex() + minScheduleHeight * getSelectedRowIndex();
+    }
 }

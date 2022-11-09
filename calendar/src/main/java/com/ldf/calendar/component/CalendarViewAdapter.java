@@ -1,5 +1,7 @@
 package com.ldf.calendar.component;
 
+import static com.ldf.calendar.behavior.MonthPagerBehavior.test;
+
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.util.Log;
@@ -23,7 +25,7 @@ public class CalendarViewAdapter extends PagerAdapter {
     private ArrayList<Calendar> calendars = new ArrayList<>();
     private int currentPosition = MonthPager.CURRENT_DAY_INDEX;
     private CalendarAttr.CalendarType calendarType = Calendar.getCurrCalendarType();
-    private int rowCount = 0;
+    //private int rowCount = 0;
     private CalendarDate seedDate;
     private OnCalendarTypeChanged onCalendarTypeChangedListener;
     //周排列方式 1：代表周日显示为本周的第一天
@@ -104,12 +106,22 @@ public class CalendarViewAdapter extends PagerAdapter {
         } else {
             CalendarDate current = date.modifyWeek(position - currentPosition);
             calendar.setSelectedCalendarDate(current);
-            if (weekArrayType == CalendarAttr.WeekArrayType.Sunday) {
+            CalendarDate saturday = Utils.getSaturday(current);
+            CalendarDate sunday;
+            if(position - currentPosition < 0){
+                sunday = Utils.getSunday(current.modifyWeek(-1)); //获取上上周的周日，即当前行的开始日期
+            }else {
+                sunday = Utils.getSunday(date);
+            }
+            calendar.showDate(current); //默认用选中日期创建当前月数据
+            int selectIndex = getSelectIndex(position - currentPosition, saturday, sunday, current);
+            /*if (weekArrayType == CalendarAttr.WeekArrayType.Sunday) {
                 calendar.showDate(Utils.getSaturday(current));
             } else {
                 calendar.showDate(Utils.getSunday(current));
-            }//每周的种子日期为这一周的最后一天
-            calendar.updateWeek(rowCount);
+            }*///每周的种子日期为这一周的最后一天
+            Log.d("selectIndex", "instantiateItem: selectIndex: " + selectIndex + " current: " +current);
+            calendar.updateWeek(selectIndex);
         }
         if (container.getChildCount() == calendars.size()) {
             container.removeView(calendars.get(position % 3));
@@ -121,6 +133,67 @@ public class CalendarViewAdapter extends PagerAdapter {
         }
         return calendar;
     }
+
+    /**
+     * 周模式：计算页面选择的行
+     * @param offsetPage
+     * @param saturday
+     * @param sunday
+     * @return
+     */
+    private int getSelectIndex(int offsetPage, CalendarDate saturday, CalendarDate sunday, CalendarDate nextSelectDate ) {
+        //获取当前选中日期的 开始周和结束周
+        CalendarDate currFirstDate = Utils.getSunday(date.modifyWeek(-1)) ; //需要偏移上一周在获取周日，周日开头模式
+        CalendarDate currLastDate = Utils.getSaturday(date);    //这周的周六
+
+        CalendarDate firstDate = sunday;
+        CalendarDate lastDate = saturday;
+        CalendarDate seedDate = nextSelectDate;
+
+        int selectIndex = getCurrCalendarView().getSelectedRowIndex();
+        if(saturday.equalsMonth(sunday)){
+            if(offsetPage > 0){
+                if(currLastDate.equalsMonth(firstDate)){
+                    if(currFirstDate.equalsMonth(lastDate)){
+                        selectIndex +=1;
+                    }else {
+                        //这种情况就是当前周里有上月的日期和下月的日期并存
+
+                        selectIndex = 1;
+                    }
+                }else {
+                    //刚好满格到下一月
+                    selectIndex = 0;
+                }
+            }else {
+                if(currFirstDate.equalsMonth(lastDate) && currLastDate.equalsMonth(firstDate)){
+                    selectIndex -=1;
+                }else {
+                    //倒数第二行
+                    selectIndex = Utils.totalRowCount(seedDate.year, seedDate.month, weekArrayType)-1-1;
+                }
+            }
+        }else {
+            //并存行。即该行同时存在当月和下页月
+            //如果选中的日期月份和当前的页月份一至则 为 最后一行，否则 第二页的第0行
+            if(date.equalsMonth(nextSelectDate)){
+                if(offsetPage > 0){
+                    selectIndex = Utils.totalRowCount(seedDate.year, seedDate.month, weekArrayType)-1;
+                }else {
+                    selectIndex = 0;
+                }
+
+            }else {
+                if(offsetPage > 0){
+                    selectIndex = 0;
+                }else {
+                    selectIndex = Utils.totalRowCount(seedDate.year, seedDate.month, weekArrayType) -1;
+                }
+            }
+        }
+        return selectIndex;
+    }
+
 
     @Override
     public int getCount() {
@@ -215,7 +288,9 @@ public class CalendarViewAdapter extends PagerAdapter {
                 next.setDay(1);
                 v3.showDate(next);
             }
-
+            v1.resetOffsetY();
+            v2.resetOffsetY();
+            v3.resetOffsetY();
            /*
             v1.switchCalendarType(CalendarAttr.CalendarType.SCHEDULE_MONTH);
             v1.showDate(seedDate);
@@ -253,6 +328,7 @@ public class CalendarViewAdapter extends PagerAdapter {
             last.setDay(1);
             setSelectedCalendarInCalendar(v2, last);
             v2.showDate(last);
+            v2.resetOffsetY();
 
             Calendar v3 = calendars.get((currentPosition + 1) % 3);//1
             v3.switchCalendarType(CalendarAttr.CalendarType.MONTH);
@@ -260,12 +336,13 @@ public class CalendarViewAdapter extends PagerAdapter {
             next.setDay(1);
             setSelectedCalendarInCalendar(v3, next);
             v3.showDate(next);
+            v3.resetOffsetY();
         }
     }
 
     public void switchToWeek(int rowIndex) {
         Log.d("switchTo", "switchToWeek: ");
-        rowCount = rowIndex;
+        //int rowCount = rowIndex;
         if (calendars != null && calendars.size() > 0 && calendarType != CalendarAttr.CalendarType.WEEK) {
             if (onCalendarTypeChangedListener != null) {
                 onCalendarTypeChangedListener.onCalendarTypeChanged(CalendarAttr.CalendarType.WEEK);
@@ -273,26 +350,32 @@ public class CalendarViewAdapter extends PagerAdapter {
             calendarType = CalendarAttr.CalendarType.WEEK;
             Calendar.setCurrCalendarType(calendarType);
             MonthPager.CURRENT_DAY_INDEX = currentPosition;
+
             Calendar v = calendars.get(currentPosition % 3);
             seedDate = v.getSeedDate();
-
-            rowCount = v.getSelectedRowIndex();
+            //v.getSelectedRowIndex();
+            v.setSelectedRowIndex(rowIndex);
 
             Calendar v1 = calendars.get(currentPosition % 3);
             v1.switchCalendarType(CalendarAttr.CalendarType.WEEK);
-            v1.showDate(seedDate);
+            v1.showDate(date);
             v1.updateWeek(rowIndex);
 
-            Calendar v2 = calendars.get((currentPosition - 1) % 3);
+            refreshCalendarOfWeek(-1);
+            /*Calendar v2 = calendars.get((currentPosition - 1) % 3);
             v2.switchCalendarType(CalendarAttr.CalendarType.WEEK);
             CalendarDate last = date.modifyWeek(-1);
             v2.setSelectedCalendarDate(last);
+
+            CalendarDate saturday2 = Utils.getSaturday(last);
+            CalendarDate sunday2 = Utils.getSunday(last);
             if (weekArrayType == CalendarAttr.WeekArrayType.Sunday) {
-                v2.showDate(Utils.getSaturday(last));
+                v2.showDate(saturday2);
             } else {
-                v2.showDate(Utils.getSunday(last));
+                v2.showDate(sunday2);
             }//每周的种子日期为这一周的最后一天
-            v2.updateWeek(rowIndex);
+            int selectIndex = getSelectIndex(-1, saturday2, sunday2);
+            v2.updateWeek(selectIndex);*/
             /**
              * 判断当前是否第一行，
              *  是：再判断选中的是否是上个月的最后一行
@@ -302,19 +385,24 @@ public class CalendarViewAdapter extends PagerAdapter {
                 //如果是当前页是第0行，如果0行里有上个月的日期，这实际就是上个月的倒数第二行，如果没有上月日期，这就是倒数第一行
 
             }*/
-            v2.setSelectedRowIndex(rowIndex);
+            //v2.setSelectedRowIndex(rowIndex);
 
-
-            Calendar v3 = calendars.get((currentPosition + 1) % 3);
+            refreshCalendarOfWeek(1);
+           /* Calendar v3 = calendars.get((currentPosition + 1) % 3);
             v3.switchCalendarType(CalendarAttr.CalendarType.WEEK);
             CalendarDate next = date.modifyWeek(1);
             v3.setSelectedCalendarDate(next);
+
+            CalendarDate saturday3 = Utils.getSaturday(last);
+            CalendarDate sunday3 = Utils.getSunday(last);
+
             if (weekArrayType == CalendarAttr.WeekArrayType.Sunday) {
                 v3.showDate(Utils.getSaturday(next));
             } else {
                 v3.showDate(Utils.getSunday(next));
             }//每周的种子日期为这一周的最后一天
-            v3.updateWeek(rowIndex);
+            int selectIndex3 = getSelectIndex(1, saturday3, sunday3);
+            v3.updateWeek(selectIndex3);*/
             //v3.setSelectedRowIndex(rowIndex + 1);
         }
     }
@@ -334,31 +422,55 @@ public class CalendarViewAdapter extends PagerAdapter {
         refreshCalendar();
     }
 
+    private void refreshCalendarOfWeek(int offsetPage){
+        Calendar v2 = calendars.get((currentPosition + offsetPage) % 3);
+        v2.switchCalendarType(CalendarAttr.CalendarType.WEEK);
+        CalendarDate last = date.modifyWeek(offsetPage);
+        v2.setSelectedCalendarDate(last);
+        v2.showDate(last);
+        //v2.setSelectedCalendarDate(last);
+
+        CalendarDate saturday2 = Utils.getSaturday(last);
+        CalendarDate sunday2 = Utils.getSunday(date);
+
+        if(offsetPage < 0){
+            sunday2 = Utils.getSunday(last.modifyWeek(-1)); //获取上上周的周日，即当前行的开始日期
+        }else {
+            saturday2 = Utils.getSunday(date);
+        }
+        int selectIndex = getSelectIndex(offsetPage, saturday2, sunday2, v2.getSelectedCalendarDate());
+        v2.updateWeek(selectIndex);
+    }
+
     private void refreshCalendar() {
         if (calendarType == CalendarAttr.CalendarType.WEEK) {
             MonthPager.CURRENT_DAY_INDEX = currentPosition;
             Calendar v1 = calendars.get(currentPosition % 3);
             seedDate = v1.getSeedDate();
             v1.showDate(seedDate);
-            v1.updateWeek(rowCount);
+            v1.updateWeek(v1.getSelectedRowIndex());
 
-            Calendar v2 = calendars.get((currentPosition - 1) % 3);
+            refreshCalendarOfWeek(-1);
+            /*Calendar v2 = calendars.get((currentPosition - 1) % 3);
             CalendarDate last = seedDate.modifyWeek(-1);
+
             if (weekArrayType == CalendarAttr.WeekArrayType.Sunday) {
                 v2.showDate(Utils.getSaturday(last));
             } else {
                 v2.showDate(Utils.getSunday(last));
             }
-            v2.updateWeek(rowCount);
 
-            Calendar v3 = calendars.get((currentPosition + 1) % 3);
+            v2.updateWeek(rowCount);*/
+
+            refreshCalendarOfWeek(1);
+           /* Calendar v3 = calendars.get((currentPosition + 1) % 3);
             CalendarDate next = seedDate.modifyWeek(1);
             if (weekArrayType == CalendarAttr.WeekArrayType.Sunday) {
                 v3.showDate(Utils.getSaturday(next));
             } else {
                 v3.showDate(Utils.getSunday(next));
             }//每周的种子日期为这一周的最后一天
-            v3.updateWeek(rowCount);
+            v3.updateWeek(rowCount);*/
         } else {
             MonthPager.CURRENT_DAY_INDEX = currentPosition;
 
@@ -382,7 +494,7 @@ public class CalendarViewAdapter extends PagerAdapter {
     }
 
     private void setSelectedCalendarInCalendar(Calendar calendar, CalendarDate seedDate){
-        if(date.month == seedDate.month){
+        if(date.equalsMonth(seedDate)){
             calendar.setSelectedCalendarDate(date);
         }else {
             if(calendar.getSelectedCalendarDate() == null || seedDate.month != calendar.getSelectedCalendarDate().month){
@@ -431,6 +543,10 @@ public class CalendarViewAdapter extends PagerAdapter {
     public void saveSelectedDateToNextPager(CalendarDate nextSelectedDate) {
         getCalendarViewByPosition(currentPosition + 1).setSelectedCalendarDate(nextSelectedDate);
 
+    }
+
+    public ArrayList<Calendar> getCalendars() {
+        return calendars;
     }
 
     public interface OnCalendarTypeChanged {

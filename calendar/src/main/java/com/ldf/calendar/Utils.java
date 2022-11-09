@@ -189,13 +189,14 @@ public final class Utils {
     /**
      * 删除方法, 这里只会删除某个文件夹下的文件，如果传入的directory是个文件，将不做处理
      *
-     * @param child     需要移动的View
+     * @param tempChild     需要移动的View
      * @param dy        实际偏移量
      * @param minOffset 最小偏移量
      * @param maxOffset 最大偏移量
      * @return void
      */
-    public static int scroll(View child, int dy, int minOffset, int maxOffset) {
+    public static int scroll(View tempChild, int dy, int minOffset, int maxOffset) {
+        RecyclerView child = (RecyclerView) tempChild;
         final int initOffset = child.getTop();
         int offset = calcOffset(initOffset - dy, minOffset, maxOffset) - initOffset;
         child.offsetTopAndBottom(offset);
@@ -216,7 +217,7 @@ public final class Utils {
      * 得到种子日期所在周的周日
      *
      * @param seedDate 种子日期
-     * @return CalendarDate 所在周周日
+     * @return CalendarDate 所在周周日 注意:是获取周日结尾的
      */
     public static CalendarDate getSunday(CalendarDate seedDate) {// TODO: 16/12/12 得到一个CustomDate对象
         Calendar c = Calendar.getInstance();
@@ -236,6 +237,8 @@ public final class Utils {
                 c.get(Calendar.MONTH) + 1,
                 c.get(Calendar.DAY_OF_MONTH));
     }
+
+
 
     /**
      * 得到种子日期所在周的周六
@@ -309,7 +312,7 @@ public final class Utils {
         });
     }
 
-    public static void scrollTo2(final CoordinatorLayout parent, final RecyclerView childRV, final MonthPager childMP, final View childWrapView, final int y, int duration) {
+    public static void scrollTo2(final CoordinatorLayout parent, final RecyclerView childRV, final View childMP, final View childWrapView, final int y, int duration) {
         final Scroller scroller = new Scroller(parent.getContext());
         scroller.startScroll(0, top, 0, y - top, duration);   //设置scroller的滚动偏移量
         ViewCompat.postOnAnimation(childRV, new Runnable() {
@@ -322,12 +325,16 @@ public final class Utils {
                     childRV.offsetTopAndBottom(delta);
 
                     int delta2 = top + (scroller.getCurrY() - childRV.getTop());
-                    ViewGroup.LayoutParams layoutParams1 = childMP.getLayoutParams();
-                    layoutParams1.height = delta2;
+
                     ViewGroup.LayoutParams layoutParams2 = childWrapView.getLayoutParams();
                     layoutParams2.height = delta2;
-                    childMP.setLayoutParams(layoutParams1);
                     childWrapView.setLayoutParams(layoutParams2);
+
+
+                    /*ViewGroup.LayoutParams layoutParams1 = childMP.getLayoutParams();
+                    layoutParams1.height = delta2;
+                    childMP.setLayoutParams(layoutParams1);*/
+
 
                     saveTop(childRV.getTop());
                     parent.dispatchDependentViewsChanged(childRV);
@@ -340,7 +347,7 @@ public final class Utils {
         });
     }
 
-    public static void touchUp(CoordinatorLayout parent, MonthPager child, boolean directionUpa){
+    public static void touchUp(CoordinatorLayout parent, MonthPager child,boolean directionUpa){
 
         CalendarViewAdapter calendarViewAdapter = (CalendarViewAdapter) child.getAdapter();
         com.ldf.calendar.view.Calendar calendar = calendarViewAdapter.getCurrCalendarView();
@@ -421,6 +428,31 @@ public final class Utils {
         }
 
     }
+
+    /**
+     * 返回最大行数
+     * @param targetYear
+     * @param targetMont
+     * @param type
+     * @return
+     */
+    public static int totalRowCount(int targetYear, int targetMont, CalendarAttr.WeekArrayType type){
+        int currentMonthDays = Utils.getMonthDays(targetYear, targetMont);    // 当前月的天数
+        int firstDayPosition = Utils.getFirstDayWeekPosition(
+                targetYear,
+                targetMont,
+                type);
+        int  fiveRowGrid = 5 * 7;
+        int diff = fiveRowGrid - currentMonthDays;
+        if(firstDayPosition <= diff){
+            //5行
+            return 5;
+        }else {
+            //6行
+            return 6;
+        }
+    }
+
 
     public static void saveTop(int y) {
         top = y;

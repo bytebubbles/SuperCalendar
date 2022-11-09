@@ -13,25 +13,26 @@ import com.ldf.calendar.component.CalendarAttr;
 import com.ldf.calendar.component.CalendarViewAdapter;
 import com.ldf.calendar.view.Calendar;
 import com.ldf.calendar.view.MonthPager;
+import com.ldf.calendar.view.WrapMonthPager;
 
 /**
  * Created by ldf on 17/6/15.
  */
 
-public class MonthPagerBehavior extends CoordinatorLayout.Behavior<MonthPager> {
+public class MonthPagerBehavior extends CoordinatorLayout.Behavior<WrapMonthPager> {
     private int top = 0;
     private int touchSlop = 1;
     private int offsetY = 0;
 
     @Override
-    public boolean layoutDependsOn(CoordinatorLayout parent, MonthPager child, View dependency) {
+    public boolean layoutDependsOn(CoordinatorLayout parent, WrapMonthPager child, View dependency) {
         return dependency instanceof RecyclerView;
     }
 
     @Override
-    public boolean onLayoutChild(CoordinatorLayout parent, MonthPager child, int layoutDirection) {
+    public boolean onLayoutChild(CoordinatorLayout parent, WrapMonthPager child, int layoutDirection) {
         parent.onLayoutChild(child, layoutDirection);
-        child.offsetTopAndBottom(top);
+        //child.offsetTopAndBottom(top);
         return true;
     }
 
@@ -40,10 +41,11 @@ public class MonthPagerBehavior extends CoordinatorLayout.Behavior<MonthPager> {
     private boolean directionUpa;
 
     @Override
-    public boolean onTouchEvent(CoordinatorLayout parent, MonthPager child, MotionEvent ev) {
+    public boolean onTouchEvent(CoordinatorLayout parent, WrapMonthPager wrapMonthPager, MotionEvent ev) {
         if (downY > lastTop) {
             return false;
         }
+        MonthPager child = wrapMonthPager.getMonthPager();
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 break;
@@ -66,16 +68,25 @@ public class MonthPagerBehavior extends CoordinatorLayout.Behavior<MonthPager> {
                             if(offsetTop > child.getViewHeight()){
                                 offsetTop = child.getViewHeight();
                             }
+                            if(offsetTop < child.getMonthHeight()){
+                                offsetTop = child.getMonthHeight();
+                            }
 
                             CalendarViewAdapter adapter = (CalendarViewAdapter) child.getAdapter();
                             Calendar calendar = adapter.getCurrCalendarView();
                             View wrapView = calendar.getChildAt(0);
+
                             ViewGroup.LayoutParams layoutParams = wrapView.getLayoutParams();
                             layoutParams.height = offsetTop;
                             wrapView.setLayoutParams(layoutParams);
-                            ViewGroup.LayoutParams childLayoutParams = child.getLayoutParams();
+
+                           /* ViewGroup.LayoutParams childLayoutParams = child.getLayoutParams();
                             childLayoutParams.height = offsetTop;
-                            child.setLayoutParams(childLayoutParams);
+                            child.setLayoutParams(childLayoutParams);*/
+
+                           /* ViewGroup.LayoutParams layoutParams1 = wrapMonthPager.getLayoutParams();
+                            layoutParams1.height = offsetTop;
+                            wrapMonthPager.setLayoutParams(layoutParams1);*/
 
                             saveTop(offsetTop);
                         }
@@ -87,22 +98,25 @@ public class MonthPagerBehavior extends CoordinatorLayout.Behavior<MonthPager> {
                             //Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getWeekHeight(), 30);
                             Utils.scroll(parent.getChildAt(1), (int) (lastY - ev.getY()), child.getWeekHeight(), child.getMonthHeight());
                             Log.d("2342342", "onTouchEvent: leftTop > child.getWeekHeight() top:" +Utils.loadTop()  + "  getWeekHeight：" + child.getWeekHeight());
+                            Log.d("2342342", "onTouchEvent: 4");
                         }else {
                             saveTop(child.getWeekHeight());
                             Utils.scroll(parent.getChildAt(1), (int) (lastY - ev.getY()), child.getWeekHeight(), child.getMonthHeight());
-                            Log.d("2342342", "onTouchEvent: else top:" +Utils.loadTop()  + "  getWeekHeight：" + child.getWeekHeight());
-
+                            //Log.d("2342342", "onTouchEvent: else top:" +Utils.loadTop()  + "  getWeekHeight：" + child.getWeekHeight());
+                            Log.d("2342342", "onTouchEvent: 3");
                         }
                     }else if(Utils.loadTop() <= child.getWeekHeight() ){
                         //不能再拖了啊, 只能下滑
                         if(!directionUpa){
+                            Log.d("2342342", "onTouchEvent: 2");
                             float leftTop = Utils.loadTop() + ((ev.getY() - lastY));
                             saveTop((int) leftTop);
                             Utils.scroll(parent.getChildAt(1), (int) (lastY - ev.getY()), child.getWeekHeight(), child.getMonthHeight());
                         }else {
-                            Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getWeekHeight(), 30);
+
+                            //Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getWeekHeight(), 30);
                             //((RecyclerView) parent.getChildAt(1)).requestDisallowInterceptTouchEvent(false);
-                            Log.d("9999", "onTouchEvent: 11111");
+                            Log.d("2342342", "onTouchEvent: 1");
                             return false;
                         }
 
@@ -114,6 +128,7 @@ public class MonthPagerBehavior extends CoordinatorLayout.Behavior<MonthPager> {
                 break;
             case MotionEvent.ACTION_UP:
                 if (isVerticalScroll) {
+                    test = true;
                    Utils.touchUp(parent, child, directionUpa);
                     /*child.setScrollable(true);
 
@@ -145,8 +160,10 @@ public class MonthPagerBehavior extends CoordinatorLayout.Behavior<MonthPager> {
         Utils.saveTop(top);
     }
 
+    public static boolean test = false;
     @Override
-    public boolean onInterceptTouchEvent(CoordinatorLayout parent, MonthPager child, MotionEvent ev) {
+    public boolean onInterceptTouchEvent(CoordinatorLayout parent, WrapMonthPager wrapMonthPager, MotionEvent ev) {
+        MonthPager child = wrapMonthPager.getMonthPager();
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 downX = ev.getX();
@@ -200,18 +217,23 @@ public class MonthPagerBehavior extends CoordinatorLayout.Behavior<MonthPager> {
     private int dependentViewTop = -1;
 
     @Override
-    public boolean onDependentViewChanged(CoordinatorLayout parent, MonthPager child, View dependency) {
+    public boolean onDependentViewChanged(CoordinatorLayout parent, WrapMonthPager wrapMonthPager, View dependency) {
+        Log.d("ldf", "onDependentViewChanged: ");
+        //if(test) return true;
+        MonthPager child = wrapMonthPager.getMonthPager();
         CalendarViewAdapter calendarViewAdapter = (CalendarViewAdapter) child.getAdapter();
+        Calendar calendar = calendarViewAdapter.getCurrCalendarView();
+        View wrapView = calendar.getChildAt(0);
         //dependency对其依赖的view(本例依赖的view是RecycleView)
         if (dependentViewTop != -1 && Utils.loadTop() <= child.getMonthHeight()) {
             int dy = dependency.getTop() - dependentViewTop;
-            int top = child.getTop();
+            int top = wrapView.getTop();
             /*if (dy > touchSlop) {
                 calendarViewAdapter.switchToMonth();
             } else if (dy < -touchSlop) {
                 calendarViewAdapter.switchToWeek(child.getRowIndex());
             }*/
-
+            Log.e("ldf", "onDependentViewChanged = " + wrapView.getTop() + " top: " + top + " opMovableDistance: " + child.getTopMovableDistance());
             if (dy > -top) {
                 dy = -top;
             }
@@ -220,8 +242,9 @@ public class MonthPagerBehavior extends CoordinatorLayout.Behavior<MonthPager> {
                 dy = -top - child.getTopMovableDistance();
             }
 
-            child.offsetTopAndBottom(dy);
-            Log.e("ldf", "onDependentViewChanged = " + dy);
+            wrapView.offsetTopAndBottom(dy);
+            //wrapMonthPager.offsetTopAndBottom(dy);
+
 
         }
 
@@ -234,14 +257,14 @@ public class MonthPagerBehavior extends CoordinatorLayout.Behavior<MonthPager> {
                     offsetTop = child.getViewHeight();
                 }
                 CalendarViewAdapter adapter = (CalendarViewAdapter) child.getAdapter();
-                Calendar calendar = adapter.getCurrCalendarView();
-                View wrapView = calendar.getChildAt(0);
+                /*Calendar calendar = adapter.getCurrCalendarView();
+                View wrapView = calendar.getChildAt(0);*/
                 ViewGroup.LayoutParams layoutParams = wrapView.getLayoutParams();
                 layoutParams.height = offsetTop;
                 wrapView.setLayoutParams(layoutParams);
-                ViewGroup.LayoutParams childLayoutParams = child.getLayoutParams();
+                /*ViewGroup.LayoutParams childLayoutParams = child.getLayoutParams();
                 childLayoutParams.height = offsetTop;
-                child.setLayoutParams(childLayoutParams);
+                child.setLayoutParams(childLayoutParams);*/
                 //saveTop(offsetTop);
             }
         }else if( Utils.loadTop() <= child.getMonthHeight() &&  Utils.loadTop() > child.getWeekHeight()){

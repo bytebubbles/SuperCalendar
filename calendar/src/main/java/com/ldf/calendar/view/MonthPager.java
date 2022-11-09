@@ -131,6 +131,10 @@ public class MonthPager extends ViewPager {
         return pageScrollState;
     }
 
+    public WrapMonthPager getParentView() {
+        return (WrapMonthPager) getParent();
+    }
+
     public interface OnPageChangeListener {
         void onPageScrolled(int position, float positionOffset, int positionOffsetPixels);
 
@@ -165,9 +169,6 @@ public class MonthPager extends ViewPager {
         this.viewHeight = cellHeight * 6 + scheduleHeight * 6;
     }
 
-    public int getViewHeight() {
-        return viewHeight;
-    }
 
     public int getCurrentPosition() {
         return currentPosition;
@@ -198,5 +199,10 @@ public class MonthPager extends ViewPager {
 
     public int getMonthHeight() {
         return monthHeight;
+    }
+
+
+    public int getViewHeight() {
+        return viewHeight;
     }
 }

@@ -147,6 +147,10 @@ public class CalendarDate implements Serializable {
         return false;
     }
 
+    public boolean equalsMonth(CalendarDate date){
+        return year == date.year && month == date.month;
+    }
+
     public CalendarDate cloneSelf() {
         return new CalendarDate(year, month, day);
     }
