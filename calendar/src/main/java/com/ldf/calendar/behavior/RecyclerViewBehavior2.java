@@ -24,6 +24,7 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
     private int monthOffset = -1;
     private int weekOffset = -1;
     private int scheduleMonthOffset = -1;
+    private int indicatorHeight = -1;
     private Context context;
     private boolean initiated = false;
     boolean hidingTop = false;
@@ -51,6 +52,7 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
             monthOffset = monthPager.getMonthHeight();
             weekOffset = getMonthPager(parent).getWeekHeight();
             scheduleMonthOffset = monthPager.getViewHeight();
+            indicatorHeight = monthPager.getIndicatorHeight();
             if(calendarType == CalendarAttr.CalendarType.MONTH){
                 saveTop(monthOffset);
             }else if(calendarType == CalendarAttr.CalendarType.WEEK) {
@@ -64,6 +66,7 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
             monthOffset = monthPager.getMonthHeight();
             weekOffset = getMonthPager(parent).getWeekHeight();
             scheduleMonthOffset = monthPager.getViewHeight();
+            indicatorHeight = monthPager.getIndicatorHeight();
             if(calendarType == CalendarAttr.CalendarType.MONTH){
                 saveTop(monthOffset);
             }else if(calendarType == CalendarAttr.CalendarType.WEEK) {
@@ -110,16 +113,16 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
         }
 
         // 上滑，正在隐藏顶部的日历
-        hidingTop = dy > 0 && child.getTop() <= scheduleMonthOffset
-                && child.getTop() > getMonthPager(coordinatorLayout).getWeekHeight();
+        hidingTop = dy > 0 && child.getTop() <= scheduleMonthOffset + indicatorHeight
+                && child.getTop() > getMonthPager(coordinatorLayout).getWeekHeightWithIndicator();
         // 下滑，正在展示顶部的日历
         showingTop = dy < 0 && !ViewCompat.canScrollVertically(target, -1);
 
         if (hidingTop ) {
             consumed[1] = Utils.scroll(child, dy,
-                    getMonthPager(coordinatorLayout).getWeekHeight(),
-                    getMonthPager(coordinatorLayout).getViewHeight());
-            saveTop(child.getTop());
+                    getMonthPager(coordinatorLayout).getWeekHeightWithIndicator(),
+                    getMonthPager(coordinatorLayout).getViewHeightWithIndicator());
+            saveTop(child.getTop() - indicatorHeight);
         }
     }
 
@@ -130,10 +133,9 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
 
         MonthPager wrapView = getMonthPager(parent);
         wrapView.setScrollable(true);
-        if(showingTop
-                || Utils.loadTop() == wrapView.getWeekHeight()
-                || Utils.loadTop() == wrapView.getMonthHeight()
-                || Utils.loadTop() == wrapView.getScheduleHeight()
+        if(Utils.loadTop() == wrapView.getWeekHeightWithIndicator()
+                || Utils.loadTop() == wrapView.getMonthHeightWithIndicator()
+                || Utils.loadTop() == wrapView.getViewHeightWithIndicator()
         ) return;
         //int scheduleToMonthTV = child.getMonthHeight() + (child.getViewHeight() - child.getMonthHeight())/2;
         Utils.touchUp(parent, wrapView, hidingTop);
@@ -176,7 +178,8 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
     }
 
     private void saveTop(int top) {
-        Utils.saveTop(top);
+        Utils.saveTop(top + indicatorHeight);
+        //Utils.saveTop(top);
         if (Utils.loadTop() == monthOffset) {
             //Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
             Utils.setScrollToBottom(false);

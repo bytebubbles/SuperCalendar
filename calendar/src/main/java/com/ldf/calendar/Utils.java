@@ -10,6 +10,7 @@ import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
@@ -324,12 +325,13 @@ public final class Utils {
                     int delta = scroller.getCurrY() - childRV.getTop();
                     childRV.offsetTopAndBottom(delta);
 
-                    int delta2 = top + (scroller.getCurrY() - childRV.getTop());
+                    /*com.ldf.calendar.view.Calendar calendar = (com.ldf.calendar.view.Calendar) childWrapView.getParent();
+                    int delta2 = top + (scroller.getCurrY() - childRV.getTop()) - calendar.getIndicatorHeight() ;
 
                     ViewGroup.LayoutParams layoutParams2 = childWrapView.getLayoutParams();
                     layoutParams2.height = delta2;
                     childWrapView.setLayoutParams(layoutParams2);
-
+                    Log.d("scrollTo2", "run: delta: " + delta + " delta2:" + delta2 + " ");*/
 
                     /*ViewGroup.LayoutParams layoutParams1 = childMP.getLayoutParams();
                     layoutParams1.height = delta2;
@@ -354,38 +356,38 @@ public final class Utils {
         View wrapView = calendar.getChildAt(0);
 
         //int scheduleToMonthTV = child.getMonthHeight() + (child.getViewHeight() - child.getMonthHeight())/2;
-        int scheduleToMonthTV = child.getViewHeight() - 150;
-        int monthToScheduleTV = child.getMonthHeight() + 150;
+        int scheduleToMonthTV = child.getViewHeightWithIndicator() - 150;
+        int monthToScheduleTV = child.getMonthHeightWithIndicator() + 150;
 
-        int monthToWeekTV = child.getMonthHeight() - 150;
-        if(Utils.loadTop() > child.getMonthHeight()){
+        int monthToWeekTV = child.getMonthHeightWithIndicator() - 150;
+        if(Utils.loadTop() > child.getMonthHeightWithIndicator()){
             if(directionUpa){
                 if(Utils.loadTop() < scheduleToMonthTV){
                     //日程状态向月状态过渡
                     //TODO 切换为月状态
-                    Utils.scrollTo2(parent, (RecyclerView) parent.getChildAt(1), child, wrapView,child.getMonthHeight(), 300);
+                    Utils.scrollTo2(parent, (RecyclerView) parent.getChildAt(1), child, wrapView,child.getMonthHeightWithIndicator(), 300);
                     calendarViewAdapter.switchToMonth();
                     com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
                 }else {
                     //日程状态向月状态过渡失败，回弹
-                    Utils.scrollTo2(parent, (RecyclerView) parent.getChildAt(1), child, wrapView,child.getViewHeight(), 300);
+                    Utils.scrollTo2(parent, (RecyclerView) parent.getChildAt(1), child, wrapView,child.getViewHeightWithIndicator(), 300);
                     com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.SCHEDULE_MONTH);
                 }
             }else {
                 if(Utils.loadTop() > monthToScheduleTV){
                     //月状态向日程状态过渡
                     //TODO 切换为日程状态
-                    Utils.scrollTo2(parent, (RecyclerView) parent.getChildAt(1), child, wrapView,child.getViewHeight(), 300);
+                    Utils.scrollTo2(parent, (RecyclerView) parent.getChildAt(1), child, wrapView,child.getViewHeightWithIndicator(), 300);
                     calendarViewAdapter.switchToSchedule();
                     com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.SCHEDULE_MONTH);
                 }else {
                     //月状态向日程状态过度失败，回弹
-                    Utils.scrollTo2(parent, (RecyclerView) parent.getChildAt(1), child, wrapView,child.getMonthHeight(), 300);
+                    Utils.scrollTo2(parent, (RecyclerView) parent.getChildAt(1), child, wrapView,child.getMonthHeightWithIndicator(), 300);
                     com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
                     //calendarViewAdapter.switchToMonth();
                 }
             }
-        }else if(Utils.loadTop() == child.getMonthHeight()){
+        }else if(Utils.loadTop() == child.getMonthHeightWithIndicator()){
             //TODO 切换为月状态
             //com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
             calendarViewAdapter.switchToMonth();
@@ -396,17 +398,17 @@ public final class Utils {
                 if(Utils.loadTop() < monthToWeekTV){
                     //月状态向周状态过度
                     //TODO 切换为周
-                    if(Utils.loadTop() > child.getWeekHeight()){
-                        Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getWeekHeight(), 300);
+                    if(Utils.loadTop() > child.getWeekHeightWithIndicator()){
+                        Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getWeekHeightWithIndicator(), 300);
                     }else {
-                        saveTop(child.getWeekHeight());
+                        saveTop(child.getWeekHeightWithIndicator());
                     }
                     //com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.WEEK);
                     calendarViewAdapter.switchToWeek(child.getRowIndex());
                     com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.WEEK);
                 }else {
                     //月状态向周状态过度失败，回弹
-                    Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getMonthHeight(), 300);
+                    Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getMonthHeightWithIndicator(), 300);
                     calendarViewAdapter.switchToMonth();
                     com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
                 }
@@ -414,12 +416,12 @@ public final class Utils {
                 if(Utils.loadTop() > Utils.loadTop() - monthToWeekTV){
                     //周状态向月状态过度
                     //TODO 切换为月状态
-                    Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getMonthHeight(), 300);
+                    Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getMonthHeightWithIndicator(), 300);
                     calendarViewAdapter.switchToMonth();
                     com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
                 }else {
                     //周状态向月状态过度失败，回弹
-                    Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getWeekHeight(), 300);
+                    Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getWeekHeightWithIndicator(), 300);
                     com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.WEEK);
                     //calendarViewAdapter.switchToWeek(child.getRowIndex());
                 }

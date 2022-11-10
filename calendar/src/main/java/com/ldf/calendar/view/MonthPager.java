@@ -22,6 +22,7 @@ public class MonthPager extends ViewPager {
     private int minScheduleHeight; //最小日程的高度
     private int monthHeight;    //月视图高度
     private int viewHeight;
+    private int indicatorHeight; //指示器高度
     private int rowIndex = 6;
 
     private OnPageChangeListener monthPageChangeListener;
@@ -36,7 +37,11 @@ public class MonthPager extends ViewPager {
 
     public MonthPager(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setCellAndScheduleHeight(Utils.dpi2px(context, Config.cellHeight), Utils.dpi2px(context,  Config.scheduleHeight), Utils.dpi2px(context,  Config.minScheduleHeight));
+        setCellAndScheduleHeight(Utils.dpi2px(context, Config.cellHeight),
+                Utils.dpi2px(context,  Config.scheduleHeight),
+                Utils.dpi2px(context,  Config.minScheduleHeight),
+                Utils.dpi2px(context, Config.indicatorHeight)
+        );
         init();
     }
 
@@ -79,13 +84,13 @@ public class MonthPager extends ViewPager {
         hasPageChangeListener = true;
     }
 
-    @Override
+/*    @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         //int mWithMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
 
         int mHeightMeasureSpec = MeasureSpec.makeMeasureSpec(viewHeight, MeasureSpec.EXACTLY);
         super.onMeasure(widthMeasureSpec, mHeightMeasureSpec);
-    }
+    }*/
 
     @Override
     public void addOnPageChangeListener(ViewPager.OnPageChangeListener listener) {
@@ -107,18 +112,35 @@ public class MonthPager extends ViewPager {
 
     @Override
     public boolean onTouchEvent(MotionEvent me) {
-        if (!scrollable)
+        if (!scrollable){
+            Log.d(MonthPagerBehavior.TAG, "MonthPager- onTouchEvent: ev: " + me.getAction() + " return false");
             return false;
-        else
-            return super.onTouchEvent(me);
+        } else{
+            boolean re = super.onTouchEvent(me);
+            Log.d(MonthPagerBehavior.TAG, "MonthPager- onTouchEvent: ev: " + me.getAction() + " return "+ re);
+            return re;
+        }
+
     }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent me) {
-        if (!scrollable)
+        if (!scrollable) {
+            Log.d(MonthPagerBehavior.TAG, "MonthPager- onInterceptTouchEvent: ev: " + me.getAction() + " return false");
             return false;
-        else
-            return super.onInterceptTouchEvent(me);
+        }
+        else {
+            boolean re = super.onInterceptTouchEvent(me);
+            Log.d(MonthPagerBehavior.TAG, "MonthPager- onInterceptTouchEvent: ev: " + me.getAction() + " return "+re);
+            return re;
+        }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        boolean re = super.dispatchTouchEvent(ev);
+        Log.d(MonthPagerBehavior.TAG, "MonthPager- dispatchTouchEvent: ev: " + ev.getAction() + " return " + re);
+        return re;
     }
 
     public void selectOtherMonth(int offset) {
@@ -161,12 +183,13 @@ public class MonthPager extends ViewPager {
         this.viewHeight = viewHeight;
     }
 
-    public void setCellAndScheduleHeight(int cellHeight, int scheduleHeight, int minScheduleHeight){
+    public void setCellAndScheduleHeight(int cellHeight, int scheduleHeight, int minScheduleHeight, int indicatorHeight){
         this.weekHeight = cellHeight;
         this.scheduleHeight = scheduleHeight;
         this.minScheduleHeight = minScheduleHeight;
         this.monthHeight = cellHeight * 6 + minScheduleHeight * 6;
         this.viewHeight = cellHeight * 6 + scheduleHeight * 6;
+        this.indicatorHeight = indicatorHeight;
     }
 
 
@@ -204,5 +227,21 @@ public class MonthPager extends ViewPager {
 
     public int getViewHeight() {
         return viewHeight;
+    }
+
+    public int getIndicatorHeight() {
+        return indicatorHeight;
+    }
+
+    public int getViewHeightWithIndicator(){
+        return getViewHeight() + getIndicatorHeight();
+    }
+
+    public int getMonthHeightWithIndicator(){
+        return getMonthHeight() + getIndicatorHeight();
+    }
+
+    public int getWeekHeightWithIndicator(){
+        return getWeekHeight() + getIndicatorHeight();
     }
 }

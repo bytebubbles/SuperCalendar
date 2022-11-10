@@ -1,5 +1,7 @@
 package com.ldf.calendar.view;
 
+import static com.ldf.calendar.behavior.MonthPagerBehavior.test;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
@@ -39,6 +41,7 @@ public class Calendar extends FrameLayout {
 
     private int scheduleHeight; //日程的高度
     private int minScheduleHeight; //最小日程的高度
+    private int indicatorHeight; //指示器高度
 
     private OnAdapterSelectListener onAdapterSelectListener;
     private float touchSlop;
@@ -55,7 +58,11 @@ public class Calendar extends FrameLayout {
                     OnSelectDateListener onSelectDateListener,
                     CalendarAttr attr) {
         super(context);
-        setCellAndScheduleHeight(Utils.dpi2px(context, Config.cellHeight), Utils.dpi2px(context,  Config.scheduleHeight), Utils.dpi2px(context,  Config.minScheduleHeight));
+        setCellAndScheduleHeight(Utils.dpi2px(context, Config.cellHeight),
+                Utils.dpi2px(context,  Config.scheduleHeight),
+                Utils.dpi2px(context,  Config.minScheduleHeight),
+                Utils.dpi2px(context, Config.indicatorHeight)
+                );
 
         this.onSelectDateListener = onSelectDateListener;
         calendarAttr = attr;
@@ -63,11 +70,12 @@ public class Calendar extends FrameLayout {
         initLayout();
     }
 
-    public void setCellAndScheduleHeight(int cellHeight, int scheduleHeight, int minScheduleHeight){
+    public void setCellAndScheduleHeight(int cellHeight, int scheduleHeight, int minScheduleHeight, int indicatorHeight){
         this.cellHeight = cellHeight;
         this.scheduleHeight = scheduleHeight;
         this.minScheduleHeight = minScheduleHeight;
         this.viewHeight = cellHeight * 6 + scheduleHeight * 6;
+        this.indicatorHeight = indicatorHeight;
     }
 
     private void init(Context context) {
@@ -144,7 +152,7 @@ public class Calendar extends FrameLayout {
     public void switchCalendarType(CalendarAttr.CalendarType calendarType) {
         calendarAttr.setCalendarType(calendarType);
         renderer.setAttr(calendarAttr);
-
+        //if(test) return;
         if(calendarType != CalendarAttr.CalendarType.WEEK){
             View wrapView = getChildAt(0);
             ViewGroup.LayoutParams layoutParams = wrapView.getLayoutParams();
@@ -174,6 +182,8 @@ public class Calendar extends FrameLayout {
     public int getCellHeight() {
         return cellHeight;
     }
+
+
 
     public void resetSelectedRowIndex() {
         renderer.resetSelectedRowIndex();
@@ -232,7 +242,7 @@ public class Calendar extends FrameLayout {
      * 先插入布局
      */
     public void initLayout() {
-        LinearLayout wrapLy = new LinearLayout(context);
+        final LinearLayout wrapLy = new LinearLayout(context);
         wrapLy.setTag(1);
         wrapLy.setOnTouchListener(new OnTouchListener() {
             @Override
@@ -258,7 +268,23 @@ public class Calendar extends FrameLayout {
                 }
             }*/
         }
+        setBackgroundColor(Color.GREEN);
+        wrapLy.post(new Runnable() {
+            @Override
+            public void run() {
+                /*ViewGroup.LayoutParams layoutParams1 = wrapLy.getLayoutParams();
+                layoutParams1.height = monthPager.getViewHeight() + monthPager.getIndicatorHeight();
+                wrapLy.setLayoutParams(layoutParams1);
+                wrapLy.setBackgroundColor(Color.YELLOW);*/
+                /*ViewGroup.LayoutParams wrapWrapLayoutParams = getLayoutParams();
+                wrapWrapLayoutParams.height = getLayoutParams().height + indicatorHeight;
+                setLayoutParams(wrapWrapLayoutParams);
 
+                ViewGroup.LayoutParams wrapWrapWrapLayoutParams = monthPager.getLayoutParams();
+                wrapWrapWrapLayoutParams.height = wrapWrapWrapLayoutParams.height + indicatorHeight;
+                monthPager.setLayoutParams(wrapWrapWrapLayoutParams);*/
+            }
+        });
     }
 
     private void addRowView(ViewGroup wrapLy,int row){
@@ -330,6 +356,10 @@ public class Calendar extends FrameLayout {
 
     public int getTotalRow() {
         return totalRow;
+    }
+
+    public int getIndicatorHeight() {
+        return indicatorHeight;
     }
 
     public void setTotalRow(int totalRow) {
