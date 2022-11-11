@@ -77,14 +77,11 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
             initiated = true;
         }
         child.offsetTopAndBottom(Utils.loadTop());
-       // minOffset = getMonthPager(parent).getCellHeight();
     }
 
     @Override
     public boolean onStartNestedScroll(CoordinatorLayout coordinatorLayout, RecyclerView child,
                                        View directTargetChild, View target, int nestedScrollAxes) {
-        Log.e("ldf", "onStartNestedScroll");
-
         MonthPager monthPager = (MonthPager) getMonthPager(coordinatorLayout);
         monthPager.setScrollable(false);
         boolean isVertical = (nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0;
@@ -100,14 +97,12 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
     @Override
     public void onNestedPreScroll(CoordinatorLayout coordinatorLayout, RecyclerView child,
                                   View target, int dx, int dy, int[] consumed) {
-        Log.e("ldf", "onNestedPreScroll");
         super.onNestedPreScroll(coordinatorLayout, child, target, dx, dy, consumed);
         child.setVerticalScrollBarEnabled(true);
 
         MonthPager monthPager = (MonthPager) getMonthPager(coordinatorLayout);
         if (monthPager.getPageScrollState() != ViewPager.SCROLL_STATE_IDLE) {
             consumed[1] = dy;
-            Log.w("ldf", "onNestedPreScroll: MonthPager dragging");
             Toast.makeText(context, "loading month data", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -128,7 +123,6 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
 
     @Override
     public void onStopNestedScroll(final CoordinatorLayout parent, final RecyclerView child, View target) {
-        Log.e("ldf", "onStopNestedScroll");
         super.onStopNestedScroll(parent, child, target);
 
         MonthPager wrapView = getMonthPager(parent);
@@ -137,29 +131,11 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
                 || Utils.loadTop() == wrapView.getMonthHeightWithIndicator()
                 || Utils.loadTop() == wrapView.getViewHeightWithIndicator()
         ) return;
-        //int scheduleToMonthTV = child.getMonthHeight() + (child.getViewHeight() - child.getMonthHeight())/2;
         Utils.touchUp(parent, wrapView, hidingTop);
-
-       /* MonthPager monthPager = (MonthPager) parent.getChildAt(0);
-        monthPager.setScrollable(true);
-        if (!Utils.isScrollToBottom()) {
-            if (monthOffset - Utils.loadTop() > Utils.getTouchSlop(context) && hidingTop) {
-                Utils.scrollTo(parent, child, getMonthPager(parent).getWeekHeight(), 500);
-            } else {
-                Utils.scrollTo(parent, child, getMonthPager(parent).getViewHeight(), 150);
-            }
-        } else {
-            if (Utils.loadTop() - weekOffset > Utils.getTouchSlop(context) && showingTop) {
-                Utils.scrollTo(parent, child, getMonthPager(parent).getViewHeight(), 500);
-            } else {
-                Utils.scrollTo(parent, child, getMonthPager(parent).getWeekHeight(), 150);
-            }
-        }*/
     }
 
     @Override
     public boolean onNestedFling(CoordinatorLayout coordinatorLayout, RecyclerView child, View target, float velocityX, float velocityY, boolean consumed) {
-        Log.d("ldf", "onNestedFling: velocityY: " + velocityY);
         return super.onNestedFling(coordinatorLayout, child, target, velocityX, velocityY, consumed);
     }
 
@@ -179,15 +155,11 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
 
     private void saveTop(int top) {
         Utils.saveTop(top + indicatorHeight);
-        //Utils.saveTop(top);
         if (Utils.loadTop() == monthOffset) {
-            //Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
             Utils.setScrollToBottom(false);
         } else if (Utils.loadTop() == weekOffset) {
-            //Calendar.setCurrCalendarType(CalendarAttr.CalendarType.WEEK);
             Utils.setScrollToBottom(true);
         } else if(Utils.loadTop() == scheduleMonthOffset){
-           //` Calendar.setCurrCalendarType(CalendarAttr.CalendarType.SCHEDULE_MONTH);
         }
     }
 }

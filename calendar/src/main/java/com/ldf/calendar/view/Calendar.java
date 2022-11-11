@@ -129,16 +129,11 @@ public class Calendar extends FrameLayout {
                             || Calendar.getCurrCalendarType() == CalendarAttr.CalendarType.WEEK ){
                         row = (int) (posY / (cellHeight + minScheduleHeight));
                     }else{
-                        //if(Calendar.getCurrCalendarType() == CalendarAttr.CalendarType.SCHEDULE_MONTH)
                         row = (int) (posY / (cellHeight + scheduleHeight));
-                    }/*else {
-                        row = (int) (posY / cellHeight);
-                    }*/
+                    }
                     cancelSelectState();
-                    //onAdapterSelectListener.cancelSelectState();
                     renderer.onClickDate(col, row);
                     onAdapterSelectListener.updateSelectState();
-                    //invalidate();
                 }
                 break;
         }
@@ -208,9 +203,6 @@ public class Calendar extends FrameLayout {
     public void updateWeek(int rowCount) {
         renderer.setSelectedRowIndex(rowCount);
         offsetYByRowIndex();
-        //renderer.updateWeek(rowCount);
-
-        //invalidate();
     }
 
     public void update() {
@@ -247,7 +239,6 @@ public class Calendar extends FrameLayout {
         wrapLy.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-
                 return onSubTouchEvent(event);
             }
         });
@@ -255,36 +246,10 @@ public class Calendar extends FrameLayout {
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, viewHeight);
         wrapLy.setLayoutParams(layoutParams);
         addView(wrapLy);
-
-        Week[] weeks = renderer.getWeeks();
         for (int row = 0; row < 6; row++) {
-
             addRowView(wrapLy, row);
-            /*if (weeks[row] != null) {
-                for (int col = 0; col < Const.TOTAL_COL; col++) {
-                    if (weeks[row].days[col] != null) {
-                        //dayRenderer.drawDay(canvas, weeks[row].days[col]);
-                    }
-                }
-            }*/
         }
-        setBackgroundColor(Color.GREEN);
-        wrapLy.post(new Runnable() {
-            @Override
-            public void run() {
-                /*ViewGroup.LayoutParams layoutParams1 = wrapLy.getLayoutParams();
-                layoutParams1.height = monthPager.getViewHeight() + monthPager.getIndicatorHeight();
-                wrapLy.setLayoutParams(layoutParams1);
-                wrapLy.setBackgroundColor(Color.YELLOW);*/
-                /*ViewGroup.LayoutParams wrapWrapLayoutParams = getLayoutParams();
-                wrapWrapLayoutParams.height = getLayoutParams().height + indicatorHeight;
-                setLayoutParams(wrapWrapLayoutParams);
-
-                ViewGroup.LayoutParams wrapWrapWrapLayoutParams = monthPager.getLayoutParams();
-                wrapWrapWrapLayoutParams.height = wrapWrapWrapLayoutParams.height + indicatorHeight;
-                monthPager.setLayoutParams(wrapWrapWrapLayoutParams);*/
-            }
-        });
+        //setBackgroundColor(Color.GREEN);
     }
 
     private void addRowView(ViewGroup wrapLy,int row){
@@ -316,12 +281,6 @@ public class Calendar extends FrameLayout {
     }
 
     public static CalendarAttr.CalendarType getCurrCalendarType() {
-       /* int scheduleToMonthTV = monthPager.getViewHeight() - 150;
-        int monthToScheduleTV = monthPager.getMonthHeight() + 150;
-        if(Utils.loadTop() > child.getMonthHeight()){
-           // if()
-        }
-*/
         return currCalendarType;
     }
 
@@ -363,41 +322,17 @@ public class Calendar extends FrameLayout {
     }
 
     public void setTotalRow(int totalRow) {
-        //initLayoutByRow(totalRow);
-
 
         ViewGroup wrapView = (ViewGroup) getChildAt(0);
-        //int diffViewCount = wrapView.getChildCount() - getTotalRow()*2;
-        //if(diffViewCount == 0) return;
         if(totalRow == 5){
             wrapView.getChildAt(wrapView.getChildCount()-2).setVisibility(View.INVISIBLE);
             wrapView.getChildAt(wrapView.getChildCount()-1).setVisibility(View.INVISIBLE);
-            //wrapView.removeViews(wrapView.getChildCount()-diffViewCount, diffViewCount);
         }else {
-            //addRowView(wrapView, wrapView.getChildCount()-1);
             wrapView.getChildAt(wrapView.getChildCount()-2).setVisibility(View.VISIBLE);
             wrapView.getChildAt(wrapView.getChildCount()-1).setVisibility(View.VISIBLE);
         }
         this.totalRow = totalRow;
     }
-
-    /*public void initLayoutByRow(int totalRow) {
-        ViewGroup wrapView = (ViewGroup) getChildAt(0);
-        if(wrapView != null && wrapView.getChildCount() == totalRow * 2) return;
-        //wrapView.removeAllViews();
-        removeView(wrapView);
-        int wrapHeight = totalRow * (cellHeight + scheduleHeight);
-        Log.d("wrapHeight", "initLayoutByRow: " + wrapHeight);
-        LinearLayout wrapLy = new LinearLayout(context);
-        wrapLy.setOrientation(LinearLayout.VERTICAL);
-        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, wrapHeight);
-        wrapLy.setLayoutParams(layoutParams);
-        addView(wrapLy);
-        for (int row = 0; row < totalRow; row++) {
-            addRowView(wrapLy, row);
-        }
-
-    }*/
 
     public void offsetYByRowIndex(){
 
@@ -409,7 +344,6 @@ public class Calendar extends FrameLayout {
                 @Override
                 public void run() {
                     view.setTop(-offset);
-                   // view.offsetTopAndBottom(-offset);
                 }
             });
         }

@@ -46,7 +46,6 @@ public class WrapMonthPager extends FrameLayout {
 
     private void init(Context context) {
 
-        //setOrientation(VERTICAL);
         monthPager = new MonthPager(context);
         //int height = monthPager.getViewHeight() + monthPager.getIndicatorHeight();
         int height = monthPager.getViewHeight();
@@ -83,20 +82,20 @@ public class WrapMonthPager extends FrameLayout {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        Log.d(MonthPagerBehavior.TAG, "WrapMonthPager- dispatchTouchEvent: ev: " + ev.getAction());
+        //Log.d(MonthPagerBehavior.TAG, "WrapMonthPager- dispatchTouchEvent: ev: " + ev.getAction());
         return super.dispatchTouchEvent(ev);
     }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        Log.d(MonthPagerBehavior.TAG, "WrapMonthPager- onInterceptTouchEvent: ev: " + ev.getAction());
+        //Log.d(MonthPagerBehavior.TAG, "WrapMonthPager- onInterceptTouchEvent: ev: " + ev.getAction());
         return super.onInterceptTouchEvent(ev);
         //return true;
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Log.d(MonthPagerBehavior.TAG, "WrapMonthPager- onTouchEvent: ev: " + event.getAction());
+        //Log.d(MonthPagerBehavior.TAG, "WrapMonthPager- onTouchEvent: ev: " + event.getAction());
         return super.onTouchEvent(event);
     }
 
