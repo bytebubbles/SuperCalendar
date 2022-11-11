@@ -5,6 +5,7 @@
 
 package com.ldf.calendar;
 
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.design.widget.CoordinatorLayout;
@@ -314,8 +315,27 @@ public final class Utils {
     }
 
     public static void scrollTo2(final CoordinatorLayout parent, final RecyclerView childRV, final View childMP, final View childWrapView, final int y, int duration) {
+        /*final ValueAnimator anim = ValueAnimator.ofInt(0, y - top);
+        anim.setDuration(100);
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            int last = 0;
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                int currentValue = (int) animation.getAnimatedValue();
+                int diff = currentValue - last;
+                last = currentValue;
+                int c1 = (int) animation.getAnimatedFraction();
+                Log.d("TAG", "cuurent value is " + currentValue + " diff: " +diff);
+                childRV.offsetTopAndBottom(diff);
+                saveTop(childRV.getTop());
+                parent.dispatchDependentViewsChanged(childRV);
+            }
+        });
+        anim.start();*/
+
         final Scroller scroller = new Scroller(parent.getContext());
-        scroller.startScroll(0, top, 0, y - top, duration);   //设置scroller的滚动偏移量
+        scroller.startScroll(0, top, 0, y - top, 400);   //设置scroller的滚动偏移量
+        Log.e("123456", "scrollTo2: y - top: " + (y - top) + " y:" + y + " top:" +top);
         ViewCompat.postOnAnimation(childRV, new Runnable() {
             @Override
             public void run() {
@@ -325,24 +345,10 @@ public final class Utils {
                     int delta = scroller.getCurrY() - childRV.getTop();
                     childRV.offsetTopAndBottom(delta);
 
-                    /*com.ldf.calendar.view.Calendar calendar = (com.ldf.calendar.view.Calendar) childWrapView.getParent();
-                    int delta2 = top + (scroller.getCurrY() - childRV.getTop()) - calendar.getIndicatorHeight() ;
-
-                    ViewGroup.LayoutParams layoutParams2 = childWrapView.getLayoutParams();
-                    layoutParams2.height = delta2;
-                    childWrapView.setLayoutParams(layoutParams2);
-                    Log.d("scrollTo2", "run: delta: " + delta + " delta2:" + delta2 + " ");*/
-
-                    /*ViewGroup.LayoutParams layoutParams1 = childMP.getLayoutParams();
-                    layoutParams1.height = delta2;
-                    childMP.setLayoutParams(layoutParams1);*/
-
+                    Log.i("TestEvent", "123456 delta:" + delta + " loadTOp: " + Utils.loadTop() + " dependency.getTop(): " + childRV.getTop() +" getCurrY:"+scroller.getCurrY() );
 
                     saveTop(childRV.getTop());
                     parent.dispatchDependentViewsChanged(childRV);
-
-
-
                     ViewCompat.postOnAnimation(childRV, this);
                 }
             }
@@ -365,6 +371,7 @@ public final class Utils {
                 if(Utils.loadTop() < scheduleToMonthTV){
                     //日程状态向月状态过渡
                     //TODO 切换为月状态
+                    Log.d("切换为月状态", "touchUp: ");
                     Utils.scrollTo2(parent, (RecyclerView) parent.getChildAt(1), child, wrapView,child.getMonthHeightWithIndicator(), 300);
                     calendarViewAdapter.switchToMonth();
                     com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);

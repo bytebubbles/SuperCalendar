@@ -75,9 +75,12 @@ public class MonthPagerBehavior extends CoordinatorLayout.Behavior<WrapMonthPage
                         int saveTop = offsetTop;
                         if(offsetTop > child.getViewHeightWithIndicator()){
                             saveTop(child.getViewHeightWithIndicator());
+                        } else if(offsetTop < child.getMonthHeightWithIndicator()){
+                            saveTop(child.getMonthHeightWithIndicator());
                         }else {
                             saveTop(offsetTop);
                         }
+
                         int height = offsetTop-child.getIndicatorHeight();
                         if(height > child.getViewHeight()){
                             height = child.getViewHeight();
@@ -259,15 +262,24 @@ public class MonthPagerBehavior extends CoordinatorLayout.Behavior<WrapMonthPage
         }
 
         if( Utils.loadTop() > child.getMonthHeightWithIndicator()
-                && Utils.loadTop() <= child.getViewHeightWithIndicator()){
+                && Utils.loadTop() <= child.getViewHeightWithIndicator()
+                && dependentViewTop != -1
+        ){
             //日程状态，改变日程view的高度
             int offsetTop = Utils.loadTop() + dependency.getTop() - dependentViewTop - child.getIndicatorHeight();
             if(offsetTop > child.getViewHeight()){
                 offsetTop = child.getViewHeight();
             }
             if(offsetTop < child.getMonthHeight()){
+                Log.e(TAG, "123456 " + offsetTop + " loadTOp: " + Utils.loadTop() + " dependency.getTop(): " + dependency.getTop() + " dependentViewTop:" + dependentViewTop + " child.getIndicatorHeight():" +child.getIndicatorHeight() );
                 offsetTop = child.getMonthHeight();
             }
+            Log.d(TAG, "123456 " + offsetTop + " loadTOp: " + Utils.loadTop() + " dependency.getTop(): " + dependency.getTop() + " dependentViewTop:" + dependentViewTop + " child.getIndicatorHeight():" +child.getIndicatorHeight() );
+
+            if(Math.abs(offsetTop - child.getMonthHeight()) < 3){
+                offsetTop = child.getMonthHeight();
+            }
+
             CalendarViewAdapter adapter = (CalendarViewAdapter) child.getAdapter();
                 /*Calendar calendar = adapter.getCurrCalendarView();
                 View wrapView = calendar.getChildAt(0);*/
