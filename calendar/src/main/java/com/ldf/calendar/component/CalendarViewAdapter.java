@@ -101,7 +101,9 @@ public class CalendarViewAdapter extends PagerAdapter {
             calendar.setSelectedCalendarDate(current);
             CalendarDate saturday = Utils.getSaturday(current);
             CalendarDate sunday;
-            if(position - currentPosition < 0){
+            if(position - currentPosition == 0){
+                sunday = Utils.getSunday(current.modifyWeek(-1));
+            }else if(position - currentPosition < 0){
                 sunday = Utils.getSunday(current.modifyWeek(-1)); //获取上上周的周日，即当前行的开始日期
             }else {
                 sunday = Utils.getSunday(date);
@@ -139,7 +141,16 @@ public class CalendarViewAdapter extends PagerAdapter {
 
         int selectIndex = getCurrCalendarView().getSelectedRowIndex();
         if(saturday.equalsMonth(sunday)){
-            if(offsetPage > 0){
+            if(offsetPage == 0 ){
+                int day = nextSelectDate.day;
+                int row = (day / 7);
+                int index = day % 7;
+                int offsetIndex = Utils.getFirstDayWeekPosition(nextSelectDate.year,nextSelectDate.month ,CalendarAttr.WeekArrayType.Sunday);
+                if (index + offsetIndex > 7){
+                    row +=1;
+                }
+                selectIndex = row;
+            }else if(offsetPage > 0){
                 if(currLastDate.equalsMonth(firstDate)){
                     if(currFirstDate.equalsMonth(lastDate)){
                         selectIndex +=1;

@@ -18,6 +18,7 @@ import android.widget.LinearLayout;
 import com.ldf.calendar.Config;
 import com.ldf.calendar.Utils;
 import com.ldf.calendar.behavior.MonthPagerBehavior;
+import com.ldf.calendar.component.CalendarAttr;
 import com.ldf.mi.calendar.R;
 
 /**
@@ -29,6 +30,8 @@ import com.ldf.mi.calendar.R;
 
 @CoordinatorLayout.DefaultBehavior(MonthPagerBehavior.class)
 public class WrapMonthPager extends FrameLayout {
+
+    private CalendarAttr.CalendarType calendarType = Calendar.getCurrCalendarType();
 
     MonthPager monthPager;
 
@@ -56,7 +59,7 @@ public class WrapMonthPager extends FrameLayout {
 
         bottomIndicator = LayoutInflater.from(context).inflate(R.layout.calendar_bottom_indicator, this, false);
         FrameLayout.LayoutParams layoutParams1 = (LayoutParams) bottomIndicator.getLayoutParams();
-        layoutParams1.gravity = Gravity.BOTTOM;
+        //layoutParams1.gravity = Gravity.TOP;
         bottomIndicator.setLayoutParams(layoutParams1);
         addView(bottomIndicator);
         bottomIndicator.setOnTouchListener(new OnTouchListener() {

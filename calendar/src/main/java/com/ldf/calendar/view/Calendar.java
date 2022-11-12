@@ -1,12 +1,11 @@
 package com.ldf.calendar.view;
 
-import static com.ldf.calendar.behavior.MonthPagerBehavior.test;
+import static com.ldf.calendar.component.CalendarAttr.CalendarType.WEEK;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,9 +28,9 @@ public class Calendar extends FrameLayout {
     /**
      * 日历列数
      */
-    private static CalendarAttr.CalendarType currCalendarType = CalendarAttr.CalendarType.SCHEDULE_MONTH;
+    private static CalendarAttr.CalendarType currCalendarType = WEEK;
     private CalendarAttr.CalendarType calendarType;
-    private int cellHeight; // 单元格高度
+    private int weekHeight; // 单元格高度
     private int cellWidth; // 单元格宽度
 
     private OnSelectDateListener onSelectDateListener;    // 单元格点击回调事件
@@ -53,6 +52,7 @@ public class Calendar extends FrameLayout {
     private final static String scheduleTag = "schedule";
     private final static String scheduleCellTag = "schedule_cell";
     private final static String calendarTag = "calendar";
+    private int monthHeight;
 
     public Calendar(Context context,
                     OnSelectDateListener onSelectDateListener,
@@ -71,10 +71,11 @@ public class Calendar extends FrameLayout {
     }
 
     public void setCellAndScheduleHeight(int cellHeight, int scheduleHeight, int minScheduleHeight, int indicatorHeight){
-        this.cellHeight = cellHeight;
+        this.weekHeight = cellHeight;
         this.scheduleHeight = scheduleHeight;
         this.minScheduleHeight = minScheduleHeight;
         this.viewHeight = cellHeight * 6 + scheduleHeight * 6;
+        this.monthHeight = cellHeight * 6 + minScheduleHeight * 6;
         this.indicatorHeight = indicatorHeight;
     }
 
@@ -101,7 +102,7 @@ public class Calendar extends FrameLayout {
         super.onSizeChanged(w, h, oldW, oldH);
        // cellHeight = h / Const.TOTAL_ROW;
         cellWidth = w / Const.TOTAL_COL;
-        calendarAttr.setCellHeight(cellHeight);
+        calendarAttr.setCellHeight(weekHeight);
         calendarAttr.setCellWidth(cellWidth);
         renderer.setAttr(calendarAttr);
     }
@@ -126,10 +127,10 @@ public class Calendar extends FrameLayout {
                     int col = (int) (posX / cellWidth);
                     int row ;
                     if(Calendar.getCurrCalendarType() == CalendarAttr.CalendarType.MONTH
-                            || Calendar.getCurrCalendarType() == CalendarAttr.CalendarType.WEEK ){
-                        row = (int) (posY / (cellHeight + minScheduleHeight));
+                            || Calendar.getCurrCalendarType() == WEEK ){
+                        row = (int) (posY / (weekHeight + minScheduleHeight));
                     }else{
-                        row = (int) (posY / (cellHeight + scheduleHeight));
+                        row = (int) (posY / (weekHeight + scheduleHeight));
                     }
                     cancelSelectState();
                     renderer.onClickDate(col, row);
@@ -148,7 +149,7 @@ public class Calendar extends FrameLayout {
         calendarAttr.setCalendarType(calendarType);
         renderer.setAttr(calendarAttr);
         //if(test) return;
-        if(calendarType != CalendarAttr.CalendarType.WEEK){
+        if(calendarType != WEEK){
             View wrapView = getChildAt(0);
             ViewGroup.LayoutParams layoutParams = wrapView.getLayoutParams();
             if(calendarType == CalendarAttr.CalendarType.MONTH){
@@ -174,11 +175,17 @@ public class Calendar extends FrameLayout {
         }
     }
 
-    public int getCellHeight() {
-        return cellHeight;
+    public int getWeekHeight() {
+        return weekHeight;
     }
 
+    public int getMonthHeight() {
+        return monthHeight;
+    }
 
+    public int getViewHeight() {
+        return viewHeight;
+    }
 
     public void resetSelectedRowIndex() {
         renderer.resetSelectedRowIndex();
@@ -243,7 +250,17 @@ public class Calendar extends FrameLayout {
             }
         });
         wrapLy.setOrientation(LinearLayout.VERTICAL);
-        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, viewHeight);
+        int height;
+        switch (currCalendarType){
+            case WEEK:
+            case MONTH:
+                height = getMonthHeight();
+                break;
+            default:
+                height = getViewHeight();
+                break;
+        }
+        ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
         wrapLy.setLayoutParams(layoutParams);
         addView(wrapLy);
         for (int row = 0; row < 6; row++) {
@@ -256,7 +273,7 @@ public class Calendar extends FrameLayout {
         //插入周，分两层，一层是用画布绘制的日历，一层是LinerLayout存放日程item
         //日历层
         View rowCalendarView = new RowCalendarView(context);
-        ViewGroup.LayoutParams calendarLayoutPas = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,cellHeight);
+        ViewGroup.LayoutParams calendarLayoutPas = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, weekHeight);
         rowCalendarView.setLayoutParams(calendarLayoutPas);
         //rowCalendarView.setBackgroundColor(Color.BLUE);
 
@@ -362,6 +379,6 @@ public class Calendar extends FrameLayout {
 
     public int getTopMovableDistance() {
 
-        return cellHeight * getSelectedRowIndex() + minScheduleHeight * getSelectedRowIndex();
+        return weekHeight * getSelectedRowIndex() + minScheduleHeight * getSelectedRowIndex();
     }
 }

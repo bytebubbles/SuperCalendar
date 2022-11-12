@@ -225,7 +225,7 @@ public class MonthPagerBehavior extends CoordinatorLayout.Behavior<WrapMonthPage
             int dy = dependency.getTop() - dependentViewTop;
             totalOffsetY += dy;
             View indicator = wrapMonthPager.getBottomIndicator();
-            indicator.setTranslationY(totalOffsetY);
+            indicator.setTranslationY(dependency.getTop() - child.getIndicatorHeight());
         }
 
         dependentViewTop = dependency.getTop();

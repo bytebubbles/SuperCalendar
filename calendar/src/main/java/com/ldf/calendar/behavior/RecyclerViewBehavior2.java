@@ -47,6 +47,8 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
     private void initMinOffsetAndInitOffset(CoordinatorLayout parent,
                                             RecyclerView child,
                                             MonthPager monthPager) {
+        WrapMonthPager wrapMonthPager = (WrapMonthPager)monthPager.getParent();
+
         if (monthPager.getBottom() > 0 && monthOffset == -1) {
 
             monthOffset = monthPager.getMonthHeight();
@@ -55,10 +57,13 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
             indicatorHeight = monthPager.getIndicatorHeight();
             if(calendarType == CalendarAttr.CalendarType.MONTH){
                 saveTop(monthOffset);
+                wrapMonthPager.getBottomIndicator().setTranslationY(monthOffset);
             }else if(calendarType == CalendarAttr.CalendarType.WEEK) {
                 saveTop(weekOffset);
+                wrapMonthPager.getBottomIndicator().setTranslationY(weekOffset);
             }else {
                 saveTop(scheduleMonthOffset);
+                wrapMonthPager.getBottomIndicator().setTranslationY(scheduleMonthOffset);
             }
 
         }
@@ -69,10 +74,13 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
             indicatorHeight = monthPager.getIndicatorHeight();
             if(calendarType == CalendarAttr.CalendarType.MONTH){
                 saveTop(monthOffset);
+                wrapMonthPager.getBottomIndicator().setTranslationY(monthOffset);
             }else if(calendarType == CalendarAttr.CalendarType.WEEK) {
                 saveTop(weekOffset);
+                wrapMonthPager.getBottomIndicator().setTranslationY(weekOffset);
             }else {
                 saveTop(scheduleMonthOffset);
+                wrapMonthPager.getBottomIndicator().setTranslationY(scheduleMonthOffset);
             }
             initiated = true;
         }
