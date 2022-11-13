@@ -14,6 +14,7 @@ import com.ldf.calendar.component.CalendarViewAdapter;
 import com.ldf.calendar.view.Calendar;
 import com.ldf.calendar.view.MonthPager;
 import com.ldf.calendar.view.WrapMonthPager;
+import com.ldf.mi.calendar.R;
 
 /**
  * Created by ldf on 17/6/15.
@@ -29,7 +30,7 @@ public class MonthPagerBehavior extends CoordinatorLayout.Behavior<WrapMonthPage
 
     @Override
     public boolean layoutDependsOn(CoordinatorLayout parent, WrapMonthPager child, View dependency) {
-        return dependency instanceof RecyclerView;
+        return dependency.getId() == R.id.scheduleListWrap;
     }
 
     @Override
@@ -112,7 +113,7 @@ public class MonthPagerBehavior extends CoordinatorLayout.Behavior<WrapMonthPage
                             saveTop((int) leftTop);
                             Utils.scroll(parent.getChildAt(1), (int) (lastY - ev.getY()), child.getWeekHeightWithIndicator(), child.getMonthHeightWithIndicator());
                         }else {
-                            Utils.scrollTo(parent, (RecyclerView) parent.getChildAt(1), child.getWeekHeightWithIndicator(), 30);
+                            Utils.scrollTo(parent,  parent.getChildAt(1), child.getWeekHeightWithIndicator(), 30);
                             return false;
                         }
 
