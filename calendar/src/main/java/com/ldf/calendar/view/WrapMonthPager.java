@@ -76,7 +76,7 @@ public class WrapMonthPager extends FrameLayout {
         int height = monthPager.getViewHeight();
         ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, height);
         monthPager.setLayoutParams(layoutParams);
-        monthPager.setBackgroundColor(Color.BLUE);
+        //monthPager.setBackgroundColor(Color.BLUE);
         addView(monthPager);
 
         if(indicatorLayoutId != -1){

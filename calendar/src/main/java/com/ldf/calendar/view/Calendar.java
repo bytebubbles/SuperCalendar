@@ -286,7 +286,7 @@ public class Calendar extends FrameLayout {
         LinearLayout.LayoutParams scheduleLayoutPas = new LinearLayout.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT,0);
         scheduleLayoutPas.weight = 1;
         rowScheduleView.setLayoutParams(scheduleLayoutPas);
-        rowScheduleView.setBackgroundColor(Color.RED);
+        //rowScheduleView.setBackgroundColor(Color.RED);
 
         rowCalendarView.setTag(calendarTag + row);
         rowScheduleView.setTag(scheduleTag + row);

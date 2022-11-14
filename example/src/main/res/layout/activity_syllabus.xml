@@ -181,7 +181,7 @@
                 app:indicator_layout="@layout/calendar_indicator"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#4f4f4f"/>
+                android:background="#ffffff"/>
 
             <FrameLayout
                 android:id="@+id/scheduleListWrap"
@@ -193,7 +193,7 @@
                     android:id="@+id/list"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="#00000000"
+                    android:background="#ffffff"
                     android:layout_gravity="bottom"
                     android:clipToPadding="false"
                     android:clipChildren="false"
