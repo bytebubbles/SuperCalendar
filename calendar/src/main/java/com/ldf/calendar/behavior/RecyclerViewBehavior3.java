@@ -54,13 +54,13 @@ public class RecyclerViewBehavior3 extends CoordinatorLayout.Behavior<View> {
             indicatorHeight = monthPager.getIndicatorHeight();
             if(calendarType == CalendarAttr.CalendarType.MONTH){
                 saveTop(monthOffset);
-                wrapMonthPager.getBottomIndicator().setTranslationY(monthOffset);
+                wrapMonthPager.setIndicatorTranslationY(monthOffset);
             }else if(calendarType == CalendarAttr.CalendarType.WEEK) {
                 saveTop(weekOffset);
-                wrapMonthPager.getBottomIndicator().setTranslationY(weekOffset);
+                wrapMonthPager.setIndicatorTranslationY(weekOffset);
             }else {
                 saveTop(scheduleMonthOffset);
-                wrapMonthPager.getBottomIndicator().setTranslationY(scheduleMonthOffset);
+                wrapMonthPager.setIndicatorTranslationY(scheduleMonthOffset);
             }
 
         }
@@ -71,13 +71,13 @@ public class RecyclerViewBehavior3 extends CoordinatorLayout.Behavior<View> {
             indicatorHeight = monthPager.getIndicatorHeight();
             if(calendarType == CalendarAttr.CalendarType.MONTH){
                 saveTop(monthOffset);
-                wrapMonthPager.getBottomIndicator().setTranslationY(monthOffset);
+                wrapMonthPager.setIndicatorTranslationY(monthOffset);
             }else if(calendarType == CalendarAttr.CalendarType.WEEK) {
                 saveTop(weekOffset);
-                wrapMonthPager.getBottomIndicator().setTranslationY(weekOffset);
+                wrapMonthPager.setIndicatorTranslationY(weekOffset);
             }else {
                 saveTop(scheduleMonthOffset);
-                wrapMonthPager.getBottomIndicator().setTranslationY(scheduleMonthOffset);
+                wrapMonthPager.setIndicatorTranslationY(scheduleMonthOffset);
             }
             initiated = true;
         }

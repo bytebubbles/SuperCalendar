@@ -58,10 +58,10 @@ public class Calendar extends FrameLayout {
                     OnSelectDateListener onSelectDateListener,
                     CalendarAttr attr) {
         super(context);
-        setCellAndScheduleHeight(Utils.dpi2px(context, Config.weekHeight),
-                Utils.dpi2px(context,  Config.scheduleHeight),
-                Utils.dpi2px(context,  Config.minScheduleHeight),
-                Utils.dpi2px(context, Config.indicatorHeight)
+        setCellAndScheduleHeight(WrapMonthPager.weekHeight,
+                WrapMonthPager.scheduleHeight,
+                WrapMonthPager.minScheduleHeight,
+                WrapMonthPager.indicatorHeight
                 );
 
         this.onSelectDateListener = onSelectDateListener;

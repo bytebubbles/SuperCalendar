@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-
+    <declare-styleable name="calendar">
+        <attr name="week_height" format="dimension"/>
+        <attr name="schedule_height" format="dimension"/>
+        <attr name="min_scheduleHeight" format="dimension"/>
+        <attr name="indicator_height" format="dimension"/>
+        <attr name="indicator_layout" format="reference"></attr>
+    </declare-styleable>
 
 </resources>

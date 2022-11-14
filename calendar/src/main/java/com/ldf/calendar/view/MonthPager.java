@@ -37,10 +37,10 @@ public class MonthPager extends ViewPager {
 
     public MonthPager(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setCellAndScheduleHeight(Utils.dpi2px(context, Config.weekHeight),
-                Utils.dpi2px(context,  Config.scheduleHeight),
-                Utils.dpi2px(context,  Config.minScheduleHeight),
-                Utils.dpi2px(context, Config.indicatorHeight)
+        setCellAndScheduleHeight(WrapMonthPager.weekHeight,
+                WrapMonthPager.scheduleHeight,
+                WrapMonthPager.minScheduleHeight,
+                WrapMonthPager.indicatorHeight
         );
         init();
     }

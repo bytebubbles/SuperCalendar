@@ -3,6 +3,7 @@ package com.ldf.calendar.view;
 import static android.view.View.MeasureSpec.EXACTLY;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.support.design.widget.CoordinatorLayout;
 import android.util.AttributeSet;
@@ -33,6 +34,13 @@ public class WrapMonthPager extends FrameLayout {
 
     private CalendarAttr.CalendarType calendarType = Calendar.getCurrCalendarType();
 
+    public static int weekHeight = 45;
+    public static int scheduleHeight = 45;
+    public static int minScheduleHeight = 0;
+    public static int indicatorHeight = 45;
+
+    private int indicatorLayoutId = -1;
+
     MonthPager monthPager;
 
     View bottomIndicator;
@@ -42,8 +50,22 @@ public class WrapMonthPager extends FrameLayout {
     }
 
     public WrapMonthPager(Context context, AttributeSet attrs){
-        super(context, attrs);
+        this(context, attrs, 0);
+
+    }
+
+    public WrapMonthPager(Context context, AttributeSet attrs, int defStyle){
+        super(context, attrs,defStyle);
+        TypedArray a = context.getTheme().obtainStyledAttributes(attrs,
+                R.styleable.calendar, defStyle, 0);
+        weekHeight = a.getDimensionPixelOffset(R.styleable.calendar_week_height, Utils.dpi2px(context,45));
+        scheduleHeight = a.getDimensionPixelOffset(R.styleable.calendar_schedule_height, Utils.dpi2px(context, 45));
+        minScheduleHeight = a.getDimensionPixelOffset(R.styleable.calendar_min_scheduleHeight, Utils.dpi2px(context, 0));
+        indicatorHeight = a.getDimensionPixelOffset(R.styleable.calendar_indicator_height, Utils.dpi2px(context, 35));
+        indicatorLayoutId = a.getResourceId(R.styleable.calendar_indicator_layout, -1);
+        a.recycle();
         init(context);
+
     }
 
 
@@ -57,28 +79,31 @@ public class WrapMonthPager extends FrameLayout {
         monthPager.setBackgroundColor(Color.BLUE);
         addView(monthPager);
 
-        bottomIndicator = LayoutInflater.from(context).inflate(R.layout.calendar_bottom_indicator, this, false);
-        FrameLayout.LayoutParams layoutParams1 = (LayoutParams) bottomIndicator.getLayoutParams();
-        //layoutParams1.gravity = Gravity.TOP;
-        bottomIndicator.setLayoutParams(layoutParams1);
-        addView(bottomIndicator);
-        bottomIndicator.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN){
-                    return true;
-                }else {
-                    return false;
-                }
+        if(indicatorLayoutId != -1){
+            bottomIndicator = LayoutInflater.from(context).inflate(indicatorLayoutId, this, false);
+            FrameLayout.LayoutParams layoutParams1 = (LayoutParams) bottomIndicator.getLayoutParams();
+            //layoutParams1.gravity = Gravity.TOP;
+            bottomIndicator.setLayoutParams(layoutParams1);
+            addView(bottomIndicator);
+            bottomIndicator.setOnTouchListener(new OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if(event.getAction() == MotionEvent.ACTION_DOWN){
+                        return true;
+                    }else {
+                        return false;
+                    }
 
-            }
-        });
+                }
+            });
+        }
+
 
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        int height = monthPager.getViewHeight() + Utils.dpi2px(getContext(), Config.indicatorHeight);
+        int height = monthPager.getViewHeight() + WrapMonthPager.indicatorHeight;
         int newHeightSpec = MeasureSpec.makeMeasureSpec(height, EXACTLY);
         super.onMeasure(widthMeasureSpec, newHeightSpec);
     }
@@ -104,6 +129,12 @@ public class WrapMonthPager extends FrameLayout {
 
     public MonthPager getMonthPager() {
         return monthPager;
+    }
+
+    public void setIndicatorTranslationY(int y){
+        if(bottomIndicator != null){
+            bottomIndicator.setTranslationY(y);
+        }
     }
 
     public View getBottomIndicator() {
