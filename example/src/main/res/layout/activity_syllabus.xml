@@ -185,7 +185,7 @@
 
             <FrameLayout
                 android:id="@+id/scheduleListWrap"
-                app:layout_behavior="com.ldf.calendar.behavior.RecyclerViewBehavior3"
+                app:layout_behavior="com.ldf.calendar.behavior.CalenderScrollBehavior"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 

@@ -18,7 +18,7 @@ import com.ldf.calendar.view.Calendar;
 import com.ldf.calendar.view.MonthPager;
 import com.ldf.calendar.view.WrapMonthPager;
 
-public class RecyclerViewBehavior3 extends CoordinatorLayout.Behavior<View> {
+public class CalenderScrollBehavior extends CoordinatorLayout.Behavior<View> {
     private int monthOffset = -1;
     private int weekOffset = -1;
     private int scheduleMonthOffset = -1;
@@ -29,7 +29,7 @@ public class RecyclerViewBehavior3 extends CoordinatorLayout.Behavior<View> {
     boolean showingTop = false;
     private CalendarAttr.CalendarType calendarType = Calendar.getCurrCalendarType();
 
-    public RecyclerViewBehavior3(Context context, AttributeSet attrs) {
+    public CalenderScrollBehavior(Context context, AttributeSet attrs) {
         super(context, attrs);
         this.context = context;
     }
