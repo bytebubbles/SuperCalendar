@@ -6,7 +6,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ldf.calendar.component.State;
-import com.ldf.calendar.interf.IDayRenderer;
+import com.ldf.calendar.interf.IViewRenderer;
 import com.ldf.calendar.model.CalendarDate;
 import com.ldf.calendar.view.DayView;
 
@@ -58,7 +58,7 @@ public class ThemeDayView extends DayView {
     }
 
     @Override
-    public IDayRenderer copy() {
+    public IViewRenderer copy() {
         return new ThemeDayView(context, layoutResource);
     }
 }

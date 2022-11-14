@@ -4,7 +4,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.RelativeLayout;
+import android.widget.FrameLayout;
 
 import com.ldf.calendar.Utils;
 import com.ldf.calendar.interf.IViewRenderer;
@@ -13,7 +13,7 @@ import com.ldf.calendar.interf.IViewRenderer;
  * Created by ldf on 16/10/19.
  */
 
-public abstract class DayView extends RelativeLayout implements IViewRenderer {
+public abstract class ScheduleView extends FrameLayout implements IViewRenderer {
 
     protected Day day;
     protected Context context;
@@ -25,11 +25,11 @@ public abstract class DayView extends RelativeLayout implements IViewRenderer {
      * @param layoutResource 资源文件
      * @param context 上下文
      */
-    public DayView(Context context, int layoutResource) {
+    public ScheduleView(Context context, int layoutResource) {
         super(context);
+        setupLayoutResource(layoutResource);
         this.context = context;
         this.layoutResource = layoutResource;
-        setupLayoutResource(layoutResource);
     }
 
     /**
@@ -38,7 +38,7 @@ public abstract class DayView extends RelativeLayout implements IViewRenderer {
      * @param layoutResource 资源文件
      * @return CalendarDate 修改后的日期
      */
-    public void setupLayoutResource(int layoutResource) {
+    private void setupLayoutResource(int layoutResource) {
         View inflated = LayoutInflater.from(getContext()).inflate(layoutResource, this);
         inflated.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED),
                 MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));

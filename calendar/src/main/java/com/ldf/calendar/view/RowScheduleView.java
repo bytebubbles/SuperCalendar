@@ -12,13 +12,13 @@ import com.ldf.calendar.interf.IViewRenderer;
  * @date 2022/11/3
  * @desc
  **/
-public class RowCalendarView extends View {
+public class RowScheduleView extends View {
 
 
     private IViewRenderer dayRenderer;
     private Day[] days;
 
-    public RowCalendarView(Context context) {
+    public RowScheduleView(Context context) {
         super(context);
     }
 

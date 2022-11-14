@@ -9,11 +9,9 @@ import android.widget.TextView;
 
 import com.ldf.calendar.Utils;
 import com.ldf.calendar.component.State;
-import com.ldf.calendar.interf.IDayRenderer;
+import com.ldf.calendar.interf.IViewRenderer;
 import com.ldf.calendar.model.CalendarDate;
 import com.ldf.calendar.view.DayView;
-
-import java.util.HashMap;
 
 /**
  * Created by ldf on 17/6/26.
@@ -93,7 +91,7 @@ public class CustomDayView extends DayView {
     }
 
     @Override
-    public IDayRenderer copy() {
+    public IViewRenderer copy() {
         return new CustomDayView(context, layoutResource);
     }
 }

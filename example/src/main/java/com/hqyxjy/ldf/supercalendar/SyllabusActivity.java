@@ -22,10 +22,12 @@ import com.ldf.calendar.interf.OnSelectDateListener;
 import com.ldf.calendar.component.CalendarViewAdapter;
 import com.ldf.calendar.model.CalendarDate;
 import com.ldf.calendar.view.Calendar;
+import com.ldf.calendar.view.ScheduleView;
 import com.ldf.calendar.view.WrapMonthPager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by ldf on 16/11/4.
@@ -166,11 +168,14 @@ public class SyllabusActivity extends AppCompatActivity {
     private void initCalendarView() {
         initListener();
         CustomDayView customDayView = new CustomDayView(context, R.layout.custom_day);
+        CustomScheduleView scheduleDayView = new CustomScheduleView(context, R.layout.item_schedule);
         calendarAdapter = new CalendarViewAdapter(
                 context,
                 onSelectDateListener,
                 CalendarAttr.WeekArrayType.Sunday,
-                customDayView);
+                customDayView,
+                scheduleDayView
+                );
         calendarAdapter.setOnCalendarTypeChangedListener(new CalendarViewAdapter.OnCalendarTypeChanged() {
             @Override
             public void onCalendarTypeChanged(CalendarAttr.CalendarType type) {
@@ -192,6 +197,23 @@ public class SyllabusActivity extends AppCompatActivity {
         markData.put("2017-6-9", "1");
         markData.put("2017-6-10", "0");
         calendarAdapter.setMarkData(markData);
+
+        HashMap<String, List> scheduleMap = new HashMap<>();
+        List<String> schedules = new ArrayList<>();
+        schedules.add("日程1");
+        schedules.add("日程2");
+        schedules.add("日程3");
+        scheduleMap.put("2022-11-13", schedules);
+        scheduleMap.put("2022-11-14", schedules);
+        calendarAdapter.setScheduleData(scheduleMap);
+
+        rvToDoList.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                scheduleMap.put("2022-11-17", schedules);
+                calendarAdapter.setScheduleData(scheduleMap);
+            }
+        },10 * 1000);
     }
 
     private void initListener() {
@@ -266,10 +288,10 @@ public class SyllabusActivity extends AppCompatActivity {
     }
 
     private void refreshSelectBackground() {
-        ThemeDayView themeDayView = new ThemeDayView(context, R.layout.custom_day_focus);
+        /*ThemeDayView themeDayView = new ThemeDayView(context, R.layout.custom_day_focus);
         calendarAdapter.setCustomDayRenderer(themeDayView);
         calendarAdapter.notifyDataSetChanged();
-        calendarAdapter.notifyDataChanged(new CalendarDate());
+        calendarAdapter.notifyDataChanged(new CalendarDate());*/
     }
 }
 

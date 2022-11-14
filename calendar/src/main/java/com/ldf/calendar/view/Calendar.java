@@ -15,7 +15,7 @@ import android.widget.LinearLayout;
 import com.ldf.calendar.Config;
 import com.ldf.calendar.Const;
 import com.ldf.calendar.component.CalendarViewAdapter;
-import com.ldf.calendar.interf.IDayRenderer;
+import com.ldf.calendar.interf.IViewRenderer;
 import com.ldf.calendar.interf.OnAdapterSelectListener;
 import com.ldf.calendar.component.CalendarAttr;
 import com.ldf.calendar.component.CalendarRenderer;
@@ -58,7 +58,7 @@ public class Calendar extends FrameLayout {
                     OnSelectDateListener onSelectDateListener,
                     CalendarAttr attr) {
         super(context);
-        setCellAndScheduleHeight(Utils.dpi2px(context, Config.cellHeight),
+        setCellAndScheduleHeight(Utils.dpi2px(context, Config.weekHeight),
                 Utils.dpi2px(context,  Config.scheduleHeight),
                 Utils.dpi2px(context,  Config.minScheduleHeight),
                 Utils.dpi2px(context, Config.indicatorHeight)
@@ -232,8 +232,12 @@ public class Calendar extends FrameLayout {
         return renderer.getLastDate();
     }
 
-    public void setDayRenderer(IDayRenderer dayRenderer) {
+    public void setDayRenderer(IViewRenderer dayRenderer) {
         renderer.setDayRenderer(dayRenderer);
+    }
+
+    public void setScheduleRenderer(IViewRenderer scheduleRenderer){
+        renderer.setScheduleRenderer(scheduleRenderer);
     }
 
 
@@ -278,7 +282,7 @@ public class Calendar extends FrameLayout {
         //rowCalendarView.setBackgroundColor(Color.BLUE);
 
         //日程层
-        LinearLayout rowScheduleView = new LinearLayout(context);
+        View rowScheduleView = new RowScheduleView(context);
         LinearLayout.LayoutParams scheduleLayoutPas = new LinearLayout.LayoutParams( ViewGroup.LayoutParams.MATCH_PARENT,0);
         scheduleLayoutPas.weight = 1;
         rowScheduleView.setLayoutParams(scheduleLayoutPas);

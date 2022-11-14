@@ -1,9 +1,6 @@
 package com.ldf.calendar.view;
 
-import android.graphics.Canvas;
-
 import com.ldf.calendar.Const;
-import com.ldf.calendar.interf.IDayRenderer;
 
 /**
  * Created by ldf on 17/6/27.

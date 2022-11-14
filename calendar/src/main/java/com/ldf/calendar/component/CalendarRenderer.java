@@ -1,19 +1,18 @@
 package com.ldf.calendar.component;
 
 import android.content.Context;
-import android.graphics.Canvas;
 import android.util.Log;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.ldf.calendar.Const;
 import com.ldf.calendar.Utils;
-import com.ldf.calendar.interf.IDayRenderer;
+import com.ldf.calendar.interf.IViewRenderer;
 import com.ldf.calendar.interf.OnSelectDateListener;
 import com.ldf.calendar.model.CalendarDate;
 import com.ldf.calendar.view.Calendar;
 import com.ldf.calendar.view.Day;
 import com.ldf.calendar.view.RowCalendarView;
+import com.ldf.calendar.view.RowScheduleView;
 import com.ldf.calendar.view.Week;
 
 /**
@@ -24,7 +23,8 @@ public class CalendarRenderer {
     private Week weeks[] = new Week[Const.TOTAL_ROW];    // 行数组，每个元素代表一行
     private Calendar calendar;
     private CalendarAttr attr;
-    private IDayRenderer dayRenderer;
+    private IViewRenderer dayRenderer;
+    private IViewRenderer scheduleRenderer;
     private Context context;
     private OnSelectDateListener onSelectDateListener;    // 单元格点击回调事件
     private CalendarDate seedDate; //种子日期
@@ -48,6 +48,10 @@ public class CalendarRenderer {
             RowCalendarView calendarView = (RowCalendarView) ((ViewGroup)calendar.getChildAt(0)).getChildAt(calendarIndex);
 
             calendarView.drawDay(weeks[row].days,dayRenderer);
+
+            int scheduleIndex = row * 2 + 1;
+            RowScheduleView scheduleView = (RowScheduleView) ((ViewGroup)calendar.getChildAt(0)).getChildAt(scheduleIndex);
+            scheduleView.drawDay(weeks[row].days, scheduleRenderer);
             //calendarView.invalidate();
             /*
             if (weeks[row] != null) {
@@ -367,8 +371,12 @@ public class CalendarRenderer {
         this.onSelectDateListener = onSelectDateListener;
     }
 
-    public void setDayRenderer(IDayRenderer dayRenderer) {
+    public void setDayRenderer(IViewRenderer dayRenderer) {
         this.dayRenderer = dayRenderer;
+    }
+
+    public void setScheduleRenderer(IViewRenderer scheduleRenderer) {
+        this.scheduleRenderer = scheduleRenderer;
     }
 
     public Week[] getWeeks() {

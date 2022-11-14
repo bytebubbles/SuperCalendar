@@ -16,6 +16,7 @@ public class Day implements Parcelable {
     private int posRow;
     private int posCol;
 
+
     public Day(State state , CalendarDate date , int posRow , int posCol) {
         this.state = state;
         this.date = date;

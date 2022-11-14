@@ -27,10 +27,12 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 public final class Utils {
 
     private static HashMap<String, String> markData = new HashMap<>();
+    private static HashMap<String, List> scheduleData = new HashMap<>();
 
     private Utils() {
 
@@ -156,6 +158,8 @@ public final class Utils {
         return markData;
     }
 
+    public static HashMap<String, List> loadScheduleData() { return scheduleData;}
+
     /**
      * 设置标记日期数据
      *
@@ -168,6 +172,14 @@ public final class Utils {
 
     public static void cleanMarkData(){
         markData.clear();
+    }
+
+    public static void setScheduleData(HashMap<String, List> scheduleData) {
+        Utils.scheduleData = scheduleData;
+    }
+
+    public static void cleanScheduleData(){
+        scheduleData.clear();
     }
 
     /**

@@ -1,7 +1,5 @@
 package com.ldf.calendar.component;
 
-import static com.ldf.calendar.behavior.MonthPagerBehavior.test;
-
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.util.Log;
@@ -9,7 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ldf.calendar.interf.OnAdapterSelectListener;
-import com.ldf.calendar.interf.IDayRenderer;
+import com.ldf.calendar.interf.IViewRenderer;
 import com.ldf.calendar.interf.OnSelectDateListener;
 import com.ldf.calendar.Utils;
 import com.ldf.calendar.view.MonthPager;
@@ -18,6 +16,7 @@ import com.ldf.calendar.view.Calendar;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class CalendarViewAdapter extends PagerAdapter {
 
@@ -35,11 +34,13 @@ public class CalendarViewAdapter extends PagerAdapter {
     public CalendarViewAdapter(Context context,
                                OnSelectDateListener onSelectDateListener,
                                CalendarAttr.WeekArrayType weekArrayType,
-                               IDayRenderer dayView) {
+                               IViewRenderer dayView,
+                               IViewRenderer ScheduleView
+                               ) {
         super();
         this.weekArrayType = weekArrayType;
         init(context, onSelectDateListener);
-        setCustomDayRenderer(dayView);
+        setCustomDayRenderer(dayView, ScheduleView);
     }
 
     public static void saveSelectedDate(CalendarDate calendarDate) {
@@ -246,8 +247,13 @@ public class CalendarViewAdapter extends PagerAdapter {
     }*/
 
     public void setMarkData(HashMap<String, String> markData) {
-        //Utils.setMarkData(markData);
+        Utils.setMarkData(markData);
         //notifyDataChanged();
+    }
+
+    public void setScheduleData(HashMap<String, List> scheduleData){
+        Utils.setScheduleData(scheduleData);
+        notifyDataChanged();
     }
 
     public void switchToSchedule(){
@@ -391,6 +397,7 @@ public class CalendarViewAdapter extends PagerAdapter {
             MonthPager.CURRENT_DAY_INDEX = currentPosition;
             Calendar v1 = calendars.get(currentPosition % 3);
             seedDate = v1.getSeedDate();
+            if(seedDate == null) return;
             v1.showDate(seedDate);
             v1.updateWeek(v1.getSelectedRowIndex());
 
@@ -403,6 +410,7 @@ public class CalendarViewAdapter extends PagerAdapter {
 
             Calendar v1 = calendars.get(currentPosition % 3);//0
             seedDate = v1.getSeedDate();
+            if(seedDate == null) return;
             setSelectedCalendarInCalendar(v1, seedDate);
             v1.showDate(seedDate);
 
@@ -439,15 +447,18 @@ public class CalendarViewAdapter extends PagerAdapter {
      *
      * @return void
      */
-    public void setCustomDayRenderer(IDayRenderer dayRenderer) {
+    public void setCustomDayRenderer(IViewRenderer dayRenderer,IViewRenderer scheduleView) {
         Calendar c0 = calendars.get(0);
         c0.setDayRenderer(dayRenderer);
+        c0.setScheduleRenderer(scheduleView);
 
         Calendar c1 = calendars.get(1);
         c1.setDayRenderer(dayRenderer.copy());
+        c1.setScheduleRenderer(scheduleView.copy());
 
         Calendar c2 = calendars.get(2);
         c2.setDayRenderer(dayRenderer.copy());
+        c2.setScheduleRenderer(scheduleView.copy());
     }
 
     public void setCurrentPosition(int currentPosition) {
