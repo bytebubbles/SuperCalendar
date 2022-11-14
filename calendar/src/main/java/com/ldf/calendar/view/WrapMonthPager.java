@@ -5,7 +5,6 @@ import static android.view.View.MeasureSpec.EXACTLY;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.support.design.widget.CoordinatorLayout;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -15,6 +14,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+
+import androidx.annotation.NonNull;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import com.ldf.calendar.Config;
 import com.ldf.calendar.Utils;
@@ -29,8 +31,8 @@ import com.ldf.mi.calendar.R;
  * remarks：
  */
 
-@CoordinatorLayout.DefaultBehavior(MonthPagerBehavior.class)
-public class WrapMonthPager extends FrameLayout {
+//@CoordinatorLayout.DefaultBehavior(MonthPagerBehavior.class)
+public class WrapMonthPager extends FrameLayout  implements CoordinatorLayout.AttachedBehavior {
 
     private CalendarAttr.CalendarType calendarType = Calendar.getCurrCalendarType();
 
@@ -139,5 +141,11 @@ public class WrapMonthPager extends FrameLayout {
 
     public View getBottomIndicator() {
         return bottomIndicator;
+    }
+
+    @NonNull
+    @Override
+    public CoordinatorLayout.Behavior getBehavior() {
+        return new MonthPagerBehavior();
     }
 }
