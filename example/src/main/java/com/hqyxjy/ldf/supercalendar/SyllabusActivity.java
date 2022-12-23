@@ -19,12 +19,11 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.ldf.calendar.Utils;
 import com.ldf.calendar.component.CalendarAttr;
+import com.ldf.calendar.view.CalendarView;
 import com.ldf.calendar.view.MonthPager;
 import com.ldf.calendar.interf.OnSelectDateListener;
 import com.ldf.calendar.component.CalendarViewAdapter;
 import com.ldf.calendar.model.CalendarDate;
-import com.ldf.calendar.view.Calendar;
-import com.ldf.calendar.view.ScheduleView;
 import com.ldf.calendar.view.WrapMonthPager;
 
 import java.util.ArrayList;
@@ -49,7 +48,7 @@ public class SyllabusActivity extends AppCompatActivity {
     TextView nextMonthBtn;
     TextView lastMonthBtn;
 
-    private ArrayList<Calendar> currentCalendars = new ArrayList<>();
+    private ArrayList<CalendarView> currentCalendars = new ArrayList<>();
     private CalendarViewAdapter calendarAdapter;
     private OnSelectDateListener onSelectDateListener;
     private int mCurrentPage = MonthPager.CURRENT_DAY_INDEX;
@@ -220,8 +219,9 @@ public class SyllabusActivity extends AppCompatActivity {
 
     private void initListener() {
         onSelectDateListener = new OnSelectDateListener() {
+
             @Override
-            public void onSelectDate(CalendarDate date) {
+            public void onSelectDate(CalendarDate date, boolean initiative) {
                 refreshClickDate(date);
             }
 

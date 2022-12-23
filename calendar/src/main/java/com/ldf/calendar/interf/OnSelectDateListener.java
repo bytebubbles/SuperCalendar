@@ -7,7 +7,7 @@ import com.ldf.calendar.model.CalendarDate;
  */
 
 public interface OnSelectDateListener {
-    void onSelectDate(CalendarDate date);
+    void onSelectDate(CalendarDate date, boolean initiative);
 
     void onSelectOtherMonth(int offset);//点击其它月份日期
 }

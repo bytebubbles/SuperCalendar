@@ -62,15 +62,18 @@ public class MonthPager extends ViewPager {
                 CalendarViewAdapter calendarViewAdapter = (CalendarViewAdapter) getAdapter();
                 calendarViewAdapter.setCurrentPosition(position);
                 if(calendarViewAdapter.getCalendarViewByPosition(currentPosition).getSelectedCalendarDate() != null){
+
                     CalendarViewAdapter.saveSelectedDate(calendarViewAdapter.getCalendarViewByPosition(currentPosition).getSelectedCalendarDate());
                 }
-
-                if (pageChangeByGesture) {
+                if (monthPageChangeListener != null) {
+                    monthPageChangeListener.onPageSelected(position);
+                }
+                /*if (pageChangeByGesture) {
                     if (monthPageChangeListener != null) {
                         monthPageChangeListener.onPageSelected(position);
                     }
                     pageChangeByGesture = false;
-                }
+                }*/
             }
 
             @Override
@@ -79,7 +82,7 @@ public class MonthPager extends ViewPager {
                 if (monthPageChangeListener != null) {
                     monthPageChangeListener.onPageScrollStateChanged(state);
                 }
-                pageChangeByGesture = true;
+                //pageChangeByGesture = true;
             }
         };
         addOnPageChangeListener(viewPageChangeListener);

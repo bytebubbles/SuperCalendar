@@ -7,6 +7,12 @@
         <attr name="min_scheduleHeight" format="dimension"/>
         <attr name="indicator_height" format="dimension"/>
         <attr name="indicator_layout" format="reference"></attr>
+        <attr name="calendar_type">
+            <enum name="week" value="0"></enum>
+            <enum name="month" value="1"></enum>
+            <enum name="schedule" value="2"></enum>
+        </attr>
+        <attr name="calendar_clickable" format="boolean"/>
     </declare-styleable>
 
 </resources>

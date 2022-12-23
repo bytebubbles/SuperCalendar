@@ -53,18 +53,19 @@ public abstract class DayView extends RelativeLayout implements IViewRenderer {
     }
 
     @Override
-    public void draw(Canvas canvas, Day day) {
+    public void draw(Canvas canvas, Day day, int height) {
         this.day = day;
         refreshContent();
         int saveId = canvas.save();
         //canvas.translate(getTranslateX(canvas, day), day.getPosRow() * getMeasuredHeight());
-        canvas.translate(getTranslateX(canvas, day), 0);
+        float y = (height - getHeight()) / 2;
+        canvas.translate(getTranslateX(canvas, day), y);
 
         draw(canvas);
         canvas.restoreToCount(saveId);
     }
 
-    private int getTranslateX(Canvas canvas, Day day) {
+    protected int getTranslateX(Canvas canvas, Day day) {
         int dx;
         int canvasWidth = canvas.getWidth() / 7;
         int viewWidth = getMeasuredWidth();

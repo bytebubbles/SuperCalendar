@@ -2,23 +2,22 @@ package com.ldf.calendar.view;
 
 import static android.view.View.MeasureSpec.EXACTLY;
 
+import static com.ldf.calendar.component.CalendarAttr.CalendarType.MONTH;
+import static com.ldf.calendar.component.CalendarAttr.CalendarType.SCHEDULE_MONTH;
+import static com.ldf.calendar.component.CalendarAttr.CalendarType.WEEK;
+
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.util.AttributeSet;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
-import com.ldf.calendar.Config;
 import com.ldf.calendar.Utils;
 import com.ldf.calendar.behavior.MonthPagerBehavior;
 import com.ldf.calendar.component.CalendarAttr;
@@ -34,7 +33,7 @@ import com.ldf.mi.calendar.R;
 //@CoordinatorLayout.DefaultBehavior(MonthPagerBehavior.class)
 public class WrapMonthPager extends FrameLayout  implements CoordinatorLayout.AttachedBehavior {
 
-    private CalendarAttr.CalendarType calendarType = Calendar.getCurrCalendarType();
+    private CalendarAttr.CalendarType calendarType = CalendarView.getCurrCalendarType();
 
     public static int weekHeight = 45;
     public static int scheduleHeight = 45;
@@ -65,6 +64,15 @@ public class WrapMonthPager extends FrameLayout  implements CoordinatorLayout.At
         minScheduleHeight = a.getDimensionPixelOffset(R.styleable.calendar_min_scheduleHeight, Utils.dpi2px(context, 0));
         indicatorHeight = a.getDimensionPixelOffset(R.styleable.calendar_indicator_height, Utils.dpi2px(context, 35));
         indicatorLayoutId = a.getResourceId(R.styleable.calendar_indicator_layout, -1);
+        int type = a.getInt(R.styleable.calendar_calendar_type, 0);
+        if(type == 2){
+            calendarType = SCHEDULE_MONTH;
+        }else if(type == 1){
+            calendarType = MONTH;
+        }else {
+            calendarType = WEEK;
+        }
+        CalendarView.setCurrCalendarType(calendarType);
         a.recycle();
         init(context);
 
@@ -82,25 +90,42 @@ public class WrapMonthPager extends FrameLayout  implements CoordinatorLayout.At
         addView(monthPager);
 
         if(indicatorLayoutId != -1){
-            bottomIndicator = LayoutInflater.from(context).inflate(indicatorLayoutId, this, false);
-            FrameLayout.LayoutParams layoutParams1 = (LayoutParams) bottomIndicator.getLayoutParams();
-            //layoutParams1.gravity = Gravity.TOP;
-            bottomIndicator.setLayoutParams(layoutParams1);
-            addView(bottomIndicator);
-            bottomIndicator.setOnTouchListener(new OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    if(event.getAction() == MotionEvent.ACTION_DOWN){
-                        return true;
-                    }else {
-                        return false;
-                    }
-
-                }
-            });
+            addIndicatorToParent(context);
         }
 
 
+    }
+
+    private void addIndicatorToParent(final Context context){
+        post(new Runnable() {
+            @Override
+            public void run() {
+                ViewGroup coordinatorLayout = ((ViewGroup)getParent());
+                bottomIndicator = LayoutInflater.from(context).inflate(indicatorLayoutId, coordinatorLayout, false);
+                CoordinatorLayout.LayoutParams layoutParams1 = (CoordinatorLayout.LayoutParams) bottomIndicator.getLayoutParams();
+                bottomIndicator.setLayoutParams(layoutParams1);
+                //addView(bottomIndicator);
+                coordinatorLayout.addView(bottomIndicator);
+                if(calendarType == CalendarAttr.CalendarType.MONTH){
+                    setIndicatorTranslationY(monthPager.getMonthHeight());
+                }else if(calendarType == CalendarAttr.CalendarType.WEEK) {
+                    setIndicatorTranslationY(monthPager.getWeekHeight());
+                }else {
+                    setIndicatorTranslationY(monthPager.getViewHeight());
+                }
+                bottomIndicator.setOnTouchListener(new OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if(event.getAction() == MotionEvent.ACTION_DOWN){
+                            return true;
+                        }else {
+                            return false;
+                        }
+
+                    }
+                });
+            }
+        });
     }
 
     @Override

@@ -1,18 +1,20 @@
 package com.ldf.calendar.view;
 
+import static com.ldf.calendar.component.CalendarAttr.CalendarType.MONTH;
+import static com.ldf.calendar.component.CalendarAttr.CalendarType.SCHEDULE_MONTH;
 import static com.ldf.calendar.component.CalendarAttr.CalendarType.WEEK;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Color;
+import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-import com.ldf.calendar.Config;
 import com.ldf.calendar.Const;
 import com.ldf.calendar.component.CalendarViewAdapter;
 import com.ldf.calendar.interf.IViewRenderer;
@@ -22,14 +24,16 @@ import com.ldf.calendar.component.CalendarRenderer;
 import com.ldf.calendar.interf.OnSelectDateListener;
 import com.ldf.calendar.model.CalendarDate;
 import com.ldf.calendar.Utils;
+import com.ldf.mi.calendar.R;
 
 @SuppressLint("ViewConstructor")
-public class Calendar extends FrameLayout {
+public class CalendarView extends FrameLayout {
     /**
      * 日历列数
      */
     private static CalendarAttr.CalendarType currCalendarType = WEEK;
-    private CalendarAttr.CalendarType calendarType;
+    private boolean calendarClickable = true;
+    private CalendarAttr.CalendarType calendarType = CalendarView.getCurrCalendarType();;
     private int weekHeight; // 单元格高度
     private int cellWidth; // 单元格宽度
 
@@ -53,10 +57,11 @@ public class Calendar extends FrameLayout {
     private final static String scheduleCellTag = "schedule_cell";
     private final static String calendarTag = "calendar";
     private int monthHeight;
+    private boolean isFullRow = true;
 
-    public Calendar(Context context,
-                    OnSelectDateListener onSelectDateListener,
-                    CalendarAttr attr) {
+    public CalendarView(Context context,
+                        OnSelectDateListener onSelectDateListener,
+                        CalendarAttr attr) {
         super(context);
         setCellAndScheduleHeight(WrapMonthPager.weekHeight,
                 WrapMonthPager.scheduleHeight,
@@ -66,6 +71,35 @@ public class Calendar extends FrameLayout {
 
         this.onSelectDateListener = onSelectDateListener;
         calendarAttr = attr;
+        init(context);
+        initLayout();
+    }
+
+    public CalendarView(Context context, AttributeSet attrs){
+        this(context, attrs, 0);
+    }
+
+    public CalendarView(Context context, AttributeSet attrs, int defStyleAttr){
+        super(context, attrs, defStyleAttr);
+        TypedArray a = context.getTheme().obtainStyledAttributes(attrs,
+                R.styleable.calendar, defStyleAttr, 0);
+        int weekHeight = a.getDimensionPixelOffset(R.styleable.calendar_week_height, Utils.dpi2px(context,45));
+        int scheduleHeight = a.getDimensionPixelOffset(R.styleable.calendar_schedule_height, Utils.dpi2px(context, 45));
+        int minScheduleHeight = a.getDimensionPixelOffset(R.styleable.calendar_min_scheduleHeight, Utils.dpi2px(context, 0));
+        int indicatorHeight = a.getDimensionPixelOffset(R.styleable.calendar_indicator_height, Utils.dpi2px(context, 35));
+        int type = a.getInt(R.styleable.calendar_calendar_type, 0);
+        calendarClickable = a.getBoolean(R.styleable.calendar_calendar_clickable, true);
+        if(type == 2){
+            currCalendarType = SCHEDULE_MONTH;
+        }else if(type == 1){
+            currCalendarType = MONTH;
+        }else {
+            currCalendarType = WEEK;
+        }
+        setCellAndScheduleHeight(weekHeight, scheduleHeight, minScheduleHeight, indicatorHeight);
+        calendarAttr = new CalendarAttr();
+        calendarAttr.setCalendarType(calendarType);
+        calendarAttr.setWeekArrayType(CalendarAttr.WeekArrayType.Sunday);
         init(context);
         initLayout();
     }
@@ -115,6 +149,9 @@ public class Calendar extends FrameLayout {
      */
     //@Override
     public boolean onSubTouchEvent(MotionEvent event) {
+        if(!calendarClickable){
+            return false;
+        }
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 posX = event.getX();
@@ -126,8 +163,8 @@ public class Calendar extends FrameLayout {
                 if (Math.abs(disX) < touchSlop && Math.abs(disY) < touchSlop) {
                     int col = (int) (posX / cellWidth);
                     int row ;
-                    if(Calendar.getCurrCalendarType() == CalendarAttr.CalendarType.MONTH
-                            || Calendar.getCurrCalendarType() == WEEK ){
+                    if(CalendarView.getCurrCalendarType() == CalendarAttr.CalendarType.MONTH
+                            || CalendarView.getCurrCalendarType() == WEEK ){
                         row = (int) (posY / (weekHeight + minScheduleHeight));
                     }else{
                         row = (int) (posY / (weekHeight + scheduleHeight));
@@ -153,14 +190,14 @@ public class Calendar extends FrameLayout {
             View wrapView = getChildAt(0);
             ViewGroup.LayoutParams layoutParams = wrapView.getLayoutParams();
             if(calendarType == CalendarAttr.CalendarType.MONTH){
-                if(layoutParams.height !=  monthPager.getMonthHeight()){
-                    layoutParams.height = monthPager.getMonthHeight();
+                if(layoutParams.height !=  getMonthHeight()){
+                    layoutParams.height = getMonthHeight();
                     wrapView.setLayoutParams(layoutParams);
                 }
 
             }else if(calendarType == CalendarAttr.CalendarType.SCHEDULE_MONTH){
-                if(layoutParams.height != monthPager.getViewHeight()){
-                    layoutParams.height = monthPager.getViewHeight();
+                if(layoutParams.height != getViewHeight()){
+                    layoutParams.height = getViewHeight();
                     wrapView.setLayoutParams(layoutParams);
                 }
             }
@@ -168,8 +205,8 @@ public class Calendar extends FrameLayout {
 
             View wrapView = getChildAt(0);
             ViewGroup.LayoutParams layoutParams = wrapView.getLayoutParams();
-            if(layoutParams.height != monthPager.getMonthHeight()){
-                layoutParams.height = monthPager.getMonthHeight();
+            if(layoutParams.height != getMonthHeight()){
+                layoutParams.height = getMonthHeight();
                 wrapView.setLayoutParams(layoutParams);
             }
         }
@@ -207,9 +244,18 @@ public class Calendar extends FrameLayout {
         renderer.showDate(current);
     }
 
+    public void setSeedDate(CalendarDate date){
+        renderer.setSeedDate(date);
+    }
+
     public void updateWeek(int rowCount) {
         renderer.setSelectedRowIndex(rowCount);
         offsetYByRowIndex();
+    }
+
+    public void updateWeekImmediately(int rowCount){
+        renderer.setSelectedRowIndex(rowCount);
+        offsetYByRowIndexImmediately();
     }
 
     public void update() {
@@ -292,8 +338,29 @@ public class Calendar extends FrameLayout {
         rowScheduleView.setTag(scheduleTag + row);
         wrapLy.addView(rowCalendarView);
         wrapLy.addView(rowScheduleView);
-
     }
+
+    private boolean scheduleRowIsGone = false;
+    public void scheduleRowAllGone(){
+        /*if(scheduleRowIsGone) return;
+        scheduleRowIsGone = true;*/
+        scheduleRowIsGone = true;
+        ViewGroup viewGroup = (ViewGroup) getChildAt(0);
+        for(int i = 0; i < 6; i++){
+            viewGroup.getChildAt(i * 2 + 1).setVisibility(View.INVISIBLE);
+        }
+    }
+
+    public void scheduleRowAllShow(){
+        if(!scheduleRowIsGone) return;
+        scheduleRowIsGone = false;
+        ViewGroup viewGroup = (ViewGroup) getChildAt(0);
+        for(int i = 0; i < 6; i++){
+            viewGroup.getChildAt(i * 2 + 1).setVisibility(View.VISIBLE);
+        }
+    }
+
+
 
     public void setMonthPager(MonthPager container) {
         this.monthPager = container;
@@ -306,7 +373,7 @@ public class Calendar extends FrameLayout {
     }
 
     public static void setCurrCalendarType(CalendarAttr.CalendarType currCalendarType) {
-        Calendar.currCalendarType = currCalendarType;
+        CalendarView.currCalendarType = currCalendarType;
     }
 
     public void setSelectedCalendarDate(CalendarDate selectedDate){
@@ -314,6 +381,10 @@ public class Calendar extends FrameLayout {
     }
     public CalendarDate getSelectedCalendarDate() {
         return renderer.getSelectedCalendarDate();
+    }
+
+    public Week[] getWeekArr(){
+        return renderer.getWeeks();
     }
 
     public void saveSelectedDateToNextPager(CalendarDate nextSelectedDate) {
@@ -342,10 +413,14 @@ public class Calendar extends FrameLayout {
         return indicatorHeight;
     }
 
+    public MonthPager getMonthPager() {
+        return monthPager;
+    }
+
     public void setTotalRow(int totalRow) {
 
         ViewGroup wrapView = (ViewGroup) getChildAt(0);
-        if(totalRow == 5){
+        if(totalRow == 5 && !isFullRow){
             wrapView.getChildAt(wrapView.getChildCount()-2).setVisibility(View.INVISIBLE);
             wrapView.getChildAt(wrapView.getChildCount()-1).setVisibility(View.INVISIBLE);
         }else {
@@ -361,15 +436,26 @@ public class Calendar extends FrameLayout {
         final int offset = getTopMovableDistance();
         int top = view.getTop();
         if(top != -offset){
-            view.post(new Runnable() {
+            view.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     view.setTop(-offset);
                 }
-            });
+            }, 300);
         }
-
     }
+
+    public void offsetYByRowIndexImmediately(){
+
+        final View view = getChildAt(0);
+        final int offset = getTopMovableDistance();
+        int top = view.getTop();
+        if(top != -offset){
+            view.setTop(-offset);
+        }
+    }
+
+
 
     public void resetOffsetY(){
         final View view = getChildAt(0);

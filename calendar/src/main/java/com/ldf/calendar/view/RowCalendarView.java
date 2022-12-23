@@ -16,6 +16,7 @@ public class RowCalendarView extends View {
 
 
     private IViewRenderer dayRenderer;
+    private int height;
     private Day[] days;
 
     public RowCalendarView(Context context) {
@@ -28,15 +29,16 @@ public class RowCalendarView extends View {
         if (days != null) {
             for (int col = 0; col < Const.TOTAL_COL; col++) {
                 if (days[col] != null) {
-                    dayRenderer.draw(canvas, days[col]);
+                    dayRenderer.draw(canvas, days[col], height);
                 }
             }
         }
     }
 
-    public void drawDay(Day[] days, IViewRenderer dayRenderer) {
+    public void drawDay(Day[] days, IViewRenderer dayRenderer, int height) {
         this.dayRenderer = dayRenderer;
         this.days = days;
+        this.height = height;
        invalidate();
     }
 

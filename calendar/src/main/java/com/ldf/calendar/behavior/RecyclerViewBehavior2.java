@@ -4,9 +4,7 @@ package com.ldf.calendar.behavior;
 import android.content.Context;
 
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -17,8 +15,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.ldf.calendar.Utils;
 import com.ldf.calendar.component.CalendarAttr;
-import com.ldf.calendar.component.CalendarViewAdapter;
-import com.ldf.calendar.view.Calendar;
+import com.ldf.calendar.view.CalendarView;
 import com.ldf.calendar.view.MonthPager;
 import com.ldf.calendar.view.WrapMonthPager;
 
@@ -31,7 +28,7 @@ public class RecyclerViewBehavior2 extends CoordinatorLayout.Behavior<RecyclerVi
     private boolean initiated = false;
     boolean hidingTop = false;
     boolean showingTop = false;
-    private CalendarAttr.CalendarType calendarType = Calendar.getCurrCalendarType();
+    private CalendarAttr.CalendarType calendarType = CalendarView.getCurrCalendarType();
 
     public RecyclerViewBehavior2(Context context, AttributeSet attrs) {
         super(context, attrs);

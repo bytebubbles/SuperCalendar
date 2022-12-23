@@ -53,7 +53,7 @@ public abstract class ScheduleView extends FrameLayout implements IViewRenderer 
     }
 
     @Override
-    public void draw(Canvas canvas, Day day) {
+    public void draw(Canvas canvas, Day day, int height) {
         this.day = day;
         refreshContent();
         int saveId = canvas.save();

@@ -14,7 +14,7 @@ import com.ldf.calendar.interf.IViewRenderer;
  **/
 public class RowScheduleView extends View {
 
-
+    private int height;
     private IViewRenderer dayRenderer;
     private Day[] days;
 
@@ -28,15 +28,17 @@ public class RowScheduleView extends View {
         if (days != null) {
             for (int col = 0; col < Const.TOTAL_COL; col++) {
                 if (days[col] != null) {
-                    dayRenderer.draw(canvas, days[col]);
+                    dayRenderer.draw(canvas, days[col], height);
                 }
             }
         }
     }
 
-    public void drawDay(Day[] days, IViewRenderer dayRenderer) {
+    public void drawDay(Day[] days, IViewRenderer dayRenderer, int height) {
+        if(dayRenderer == null) return;
         this.dayRenderer = dayRenderer;
         this.days = days;
+        this.height = height;
        invalidate();
     }
 

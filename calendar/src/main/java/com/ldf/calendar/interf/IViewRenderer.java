@@ -12,7 +12,7 @@ public interface IViewRenderer {
 
     void refreshContent();
 
-    void draw(Canvas canvas, Day day);
+    void draw(Canvas canvas, Day day, int height);
 
     IViewRenderer copy();
 

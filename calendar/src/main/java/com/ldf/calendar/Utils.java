@@ -5,7 +5,6 @@
 
 package com.ldf.calendar;
 
-import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.Log;
@@ -20,6 +19,7 @@ import androidx.core.view.ViewCompat;
 import com.ldf.calendar.component.CalendarAttr;
 import com.ldf.calendar.component.CalendarViewAdapter;
 import com.ldf.calendar.model.CalendarDate;
+import com.ldf.calendar.view.CalendarView;
 import com.ldf.calendar.view.MonthPager;
 
 import java.text.ParseException;
@@ -160,6 +160,12 @@ public final class Utils {
 
     public static HashMap<String, List> loadScheduleData() { return scheduleData;}
 
+    public static void clear(){
+        if(scheduleData != null && !scheduleData.isEmpty()){
+            scheduleData.clear();
+        }
+    }
+
     /**
      * 设置标记日期数据
      *
@@ -244,9 +250,7 @@ public final class Utils {
             System.out.println(e.getMessage());
         }
         c.setTime(date);
-        if (c.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
-            c.add(Calendar.DAY_OF_MONTH, 7 - c.get(Calendar.DAY_OF_WEEK) + 1);
-        }
+        c.add(Calendar.DAY_OF_MONTH, 7 - c.get(Calendar.DAY_OF_WEEK) + 1);
         return new CalendarDate(c.get(Calendar.YEAR),
                 c.get(Calendar.MONTH) + 1,
                 c.get(Calendar.DAY_OF_MONTH));
@@ -347,7 +351,7 @@ public final class Utils {
 
         final Scroller scroller = new Scroller(parent.getContext());
         scroller.startScroll(0, top, 0, y - top, 400);   //设置scroller的滚动偏移量
-        Log.e("123456", "scrollTo2: y - top: " + (y - top) + " y:" + y + " top:" +top);
+        //Log.e("123456", "scrollTo2: y - top: " + (y - top) + " y:" + y + " top:" +top);
         ViewCompat.postOnAnimation(childRV, new Runnable() {
             @Override
             public void run() {
@@ -357,11 +361,20 @@ public final class Utils {
                     int delta = scroller.getCurrY() - childRV.getTop();
                     childRV.offsetTopAndBottom(delta);
 
-                    Log.i("TestEvent", "123456 delta:" + delta + " loadTOp: " + Utils.loadTop() + " dependency.getTop(): " + childRV.getTop() +" getCurrY:"+scroller.getCurrY() );
+                    //Log.i("TestEvent", "123456 delta:" + delta + " loadTOp: " + Utils.loadTop() + " dependency.getTop(): " + childRV.getTop() +" getCurrY:"+scroller.getCurrY() );
 
                     saveTop(childRV.getTop());
                     parent.dispatchDependentViewsChanged(childRV);
                     ViewCompat.postOnAnimation(childRV, this);
+                }else {
+                    if(childMP instanceof MonthPager && childWrapView instanceof ViewGroup){
+                        MonthPager monthPager = (MonthPager) childMP;
+                        CalendarViewAdapter calendarViewAdapter = (CalendarViewAdapter) monthPager.getAdapter();
+                        if(y == monthPager.getViewHeightWithIndicator()){
+                            calendarViewAdapter.allPageScheduleRowShow();
+                        }
+                    }
+
                 }
             }
         });
@@ -370,7 +383,7 @@ public final class Utils {
     public static void touchUp(CoordinatorLayout parent, MonthPager child,boolean directionUpa){
 
         CalendarViewAdapter calendarViewAdapter = (CalendarViewAdapter) child.getAdapter();
-        com.ldf.calendar.view.Calendar calendar = calendarViewAdapter.getCurrCalendarView();
+        CalendarView calendar = calendarViewAdapter.getCurrCalendarView();
         View wrapView = calendar.getChildAt(0);
 
         //int scheduleToMonthTV = child.getMonthHeight() + (child.getViewHeight() - child.getMonthHeight())/2;
@@ -382,41 +395,41 @@ public final class Utils {
             if(directionUpa){
                 if(Utils.loadTop() < scheduleToMonthTV){
                     //日程状态向月状态过渡
-                    //TODO 切换为月状态
+                    //切换为月状态
                     Log.d("切换为月状态", "touchUp: ");
                     Utils.scrollTo2(parent,  parent.getChildAt(1), child, wrapView,child.getMonthHeightWithIndicator(), 300);
                     calendarViewAdapter.switchToMonth();
-                    com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
+                    CalendarView.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
                 }else {
                     //日程状态向月状态过渡失败，回弹
                     Utils.scrollTo2(parent, parent.getChildAt(1), child, wrapView,child.getViewHeightWithIndicator(), 300);
-                    com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.SCHEDULE_MONTH);
+                    CalendarView.setCurrCalendarType(CalendarAttr.CalendarType.SCHEDULE_MONTH);
                 }
             }else {
                 if(Utils.loadTop() > monthToScheduleTV){
                     //月状态向日程状态过渡
-                    //TODO 切换为日程状态
+                    // 切换为日程状态
                     Utils.scrollTo2(parent, parent.getChildAt(1), child, wrapView,child.getViewHeightWithIndicator(), 300);
                     calendarViewAdapter.switchToSchedule();
-                    com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.SCHEDULE_MONTH);
+                    CalendarView.setCurrCalendarType(CalendarAttr.CalendarType.SCHEDULE_MONTH);
                 }else {
                     //月状态向日程状态过度失败，回弹
                     Utils.scrollTo2(parent,  parent.getChildAt(1), child, wrapView,child.getMonthHeightWithIndicator(), 300);
-                    com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
+                    CalendarView.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
                     //calendarViewAdapter.switchToMonth();
                 }
             }
         }else if(Utils.loadTop() == child.getMonthHeightWithIndicator()){
-            //TODO 切换为月状态
+            // 切换为月状态
             //com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
             calendarViewAdapter.switchToMonth();
-            com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
+            CalendarView.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
         }else{
             //Utils.loadTop() < child.getMonthHeight()
             if(directionUpa){
                 if(Utils.loadTop() < monthToWeekTV){
                     //月状态向周状态过度
-                    //TODO 切换为周
+                    //切换为周
                     if(Utils.loadTop() > child.getWeekHeightWithIndicator()){
                         Utils.scrollTo(parent,  parent.getChildAt(1), child.getWeekHeightWithIndicator(), 300);
                     }else {
@@ -424,24 +437,24 @@ public final class Utils {
                     }
                     //com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.WEEK);
                     calendarViewAdapter.switchToWeek(child.getRowIndex());
-                    com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.WEEK);
+                    CalendarView.setCurrCalendarType(CalendarAttr.CalendarType.WEEK);
                 }else {
                     //月状态向周状态过度失败，回弹
                     Utils.scrollTo(parent, parent.getChildAt(1), child.getMonthHeightWithIndicator(), 300);
                     calendarViewAdapter.switchToMonth();
-                    com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
+                    CalendarView.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
                 }
             }else{
                 if(Utils.loadTop() > Utils.loadTop() - monthToWeekTV){
                     //周状态向月状态过度
-                    //TODO 切换为月状态
+                    //切换为月状态
                     Utils.scrollTo(parent,  parent.getChildAt(1), child.getMonthHeightWithIndicator(), 300);
                     calendarViewAdapter.switchToMonth();
-                    com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
+                    CalendarView.setCurrCalendarType(CalendarAttr.CalendarType.MONTH);
                 }else {
                     //周状态向月状态过度失败，回弹
                     Utils.scrollTo(parent,  parent.getChildAt(1), child.getWeekHeightWithIndicator(), 300);
-                    com.ldf.calendar.view.Calendar.setCurrCalendarType(CalendarAttr.CalendarType.WEEK);
+                    CalendarView.setCurrCalendarType(CalendarAttr.CalendarType.WEEK);
                     //calendarViewAdapter.switchToWeek(child.getRowIndex());
                 }
             }
